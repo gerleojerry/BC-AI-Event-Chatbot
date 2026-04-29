@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Chat UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 50vw;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 10px;
+      background: #007bff;
+      color: white;
+    }
+
+    .header input {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fafafa;
+    }
+
+    .message {
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 70%;
+    }
+
+    .sent {
+      background: #007bff;
+      color: white;
+      align-self: flex-end;
+    }
+
+    .received {
+      background: #e4e6eb;
+      align-self: flex-start;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+
+    .input-area button {
+      margin-left: 10px;
+      padding: 10px 15px;
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .input-area button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="header">
+    <label>Phone Number:</label>
+    <input type="text" id="phoneNumber" placeholder="Enter phone number">
+  </div>
+
+  <div class="chat-box" id="chatBox"></div>
+
+  <div class="input-area">
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+  </div>
+</div>
+
+<script>
+  const chatBox = document.getElementById("chatBox");
+
+  function addMessage(text, type) {
+    const msg = document.createElement("div");
+    msg.classList.add("message", type);
+    msg.innerText = text;
+    chatBox.appendChild(msg);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  async function sendMessage() {
+    const phone = document.getElementById("phoneNumber").value;
+    const message = document.getElementById("messageInput").value;
+
+    if (!phone || !message) {
+      alert("Phone number and message are required");
+      return;
+    }
+
+    // Show sent message in UI
+    addMessage(message, "sent");
+
+    document.getElementById("messageInput").value = "";
+
+    const url = 'http://127.0.0.1:8000/message'
+
+
+
+    try {
+
+    const formData = new FormData();
+    formData.append("From", phone);
+    formData.append("Body", message);
+
+    const response = await fetch(url, {
+      method: "POST",
+      body: formData   
+    });
+
+
+
+      const data = await response.json();
+      console.log("Response from server:", data);
+
+      // Example: display response as received message
+      if (data) {
+        console.log("Adding received message to UI:", data);
+        addMessage(data, "received");
+      }
+
+    } catch (error) {
+      console.error(error);
+      addMessage("Error sending message", "received");
+    }
+  }
+
+  // Optional: simulate incoming messages every few seconds
+  // (replace with WebSocket or polling in real app)
+//   function simulateIncoming() {
+//     setTimeout(() => {
+//       addMessage("Incoming message example", "received");
+//       simulateIncoming();
+//     }, 10000);
+//   }
+
+//   simulateIncoming();
+</script>
+
+</body>
+</html>
