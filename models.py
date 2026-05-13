@@ -21,6 +21,7 @@ class BaseDocument(Document):
 
 
 
+
 class Message(BaseDocument):
     message: str
     is_user: bool
@@ -53,9 +54,41 @@ class User(BaseDocument):
     embedded_interest : Optional[List[float]] = None
     
     class Settings:
-        name = "user"
+        name = "users"
 
 
 class Request(BaseModel):
     phone_number: str
     message: str
+
+
+class Event(BaseDocument):
+    name: str
+    date_time: datetime
+    room: str
+    phone_number: str
+    
+    class Settings:
+        name = "events"
+        indexes = ["date_time"]
+
+
+
+class RagDocument(BaseDocument):
+    document_id: str
+    content: str
+    embedding: List[float]
+
+    class Settings:
+        name = "documents"
+
+
+class RagChunk(BaseDocument):
+    document_id: str
+    chunk_index: int
+    content: str
+    embedding: List[float]
+
+    class Settings:
+        name = "chunks"
+        indexes = ["document_id"]

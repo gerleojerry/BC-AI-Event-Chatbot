@@ -1,23 +1,29 @@
 import os
 import logging
+import prompts
+import asyncio
+import shutil
 from dotenv import load_dotenv
+from beanie import init_beanie
 from fastapi import FastAPI, Form
+from asyncio import events, tasks
 from typing import Optional, Dict, Any
-from datetime import datetime, timezone
+from tempfile import NamedTemporaryFile
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-from models import Session, Message, User, Request 
-import prompts
-from conversations import get_conversations, get_response, get_user_info, get_stage, get_embedding, find_similar_documents
-
+from datetime import datetime, timezone, timedelta, time
+from models import Session, Message, User, Request, Event
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from langchain_community.document_loaders import UnstructuredWordDocumentLoader
+from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, find_similar_documents, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
 
 
 app = FastAPI()
-
+scheduler = AsyncIOScheduler()
 origins = ["*"]
 
 app.add_middleware(
@@ -28,65 +34,82 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.on_event("startup")
-# async def start_db():
-#     await init_db()
+async def job():
+    print("Running job...")
+    # now = datetime.now(timezone.utc)
+    now = datetime.now()
+    fifteen_minutes_later = now + timedelta(minutes=15)
+    print(f"This the current time: {now}")
+    # print(f"This is the time 10 minutes later: {ten_minutes_later}")
+    docs = await Event.find(
+    {
+        "date_time": {
+            "$gte": now,
+            "$lte": fifteen_minutes_later
+        }
+    }
+        ).to_list()
+    
+    print(f"This is the upcoming events in the next 15 minutes: {len(docs)}")
+    for doc in docs: 
+        event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
+        message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
+        request_data = Request(phone_number=phone_number, message=message)
+        print(message)
+        # await send_whatsapp_message(request_data)
+
+async def init_db():
+    collection_name = os.getenv("MONGO_DB_COLLECTION")
+    mongo_string = os.getenv("MONGO_CONNECTION_STRING")
+    client = AsyncIOMotorClient(mongo_string)
+    await init_beanie(database=client[collection_name], document_models=[Session, User, Event])
+
+def start_scheduler():
+    scheduler.add_job(job, "interval", minutes=30)
+    scheduler.start()
+
+@app.on_event("startup")
+async def start_db():
+    await init_db()
+    start_scheduler()
 
 @app.get("/health")
 async def root():
     return {"response": "Seems good"}
 
-
 @app.post("/create")
 def create_user(): 
-    pass
-
-
+    return {"message": "User created successfully"}
 
 async def send_message(request: Request):
-
-    collection_name = 'sparkle'
-    mongo_string = os.getenv("MONGO_CONNECTION_STRING")
-
-   
-    client = AsyncIOMotorClient(mongo_string)
-
-    await init_beanie(database=client[collection_name], document_models=[Session, User])
-
     user = await User.find_one({'phone_number' : request.phone_number})
 
     if not user: 
         print("THis is a new user")
         session = await Session.find_one({"phone_number": request.phone_number})
-
         if not session: 
             session =  Session(phone_number = request.phone_number)
 
         message = Message(message = request.message , is_user = True)
-
         session.chats.append(message)
         await session.save()
         logging.info("User Message saved to the session.")
 
         conversations = get_conversations(session)
         result = get_response(conversations , prompts.ONBOARDING_PROMPTS)
-
         stage_detector = get_stage(conversations, prompts.ONBOARDING_STAGE_DETECTOR)
         print("This is the conversation type: ", stage_detector)
        
         if stage_detector == "confirmation":
             customer_info = get_user_info(conversations, prompts.ONBOARDING_DATA_EXTRACTION)
             print("This is the extracted information: ", customer_info)
-
             firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent = customer_info.values()
             embedded_interest = get_embedding(interest)
             print(firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent)
-
             user = User(phone_number = request.phone_number, first_name = firstname, last_name = lastname, email = email, job = job, company = company_name, interest = interest, contact_share = contact_share, marketing_consent= marketing_consent, embedded_interest = embedded_interest)
             await user.insert()
             logging.info("New User registration process successful.")
 
-    
     else:
         print("This is not a new customer.")
         session = await Session.find_one({"phone_number": request.phone_number})
@@ -106,33 +129,58 @@ async def send_message(request: Request):
         conversations = get_conversations(session)
         request_type = get_response(conversations, prompts.CONVERSATION_STAGE_DETECTOR)
         print("This is the conversation type: ", request_type)
-
         
+        if request_type == "event":
+            result = get_response(conversations , prompts.EVENT_BOT_PROMPT)
+            print(result)
+            pass
 
-        if request_type == "networking":
-            similar_attendees = await find_similar_documents(document_model =user, phone_number = request.phone_number)
-            print("These are the similar attendees: ", similar_attendees)
+        elif request_type == "reminder_confirmation":
+            events = get_event_info(conversations , prompts.EVENT_DATA_EXTRACTION)['people']
+            print(events)
+            event_info = []
+            for event in events:
+                hour, minute = map(int, event['time'].split(":"))
+                stored_time = time(hour, minute)
+                now = datetime.now(timezone.utc)
+                event_date = datetime.combine(now.date(), stored_time)
+                print(event_date)
+                event_info.append(Event(name = event['name'], date_time = event_date, room = event['room'], phone_number = request.phone_number))
 
-            similar_attendees = str(similar_attendees)
+            await Event.insert_many(event_info)
 
+            events_data = "\n".join([f"{event['name']} at {event['time']} in room {event['room']}" for event in events])
 
+            result =  f"A reminder has been set for you for the following events: {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
 
-            result = get_response(similar_attendees, prompts.NETWORKING_RESPONSE_PRETTIFIER)
+        elif request_type == "networking":
+            
+            parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
+            print(parsed)
+            filters = build_beanie_query(parsed)
+            print(filters)
 
+            if len(filters) == 1:
+                result = "Sorry, I couldn't get any valid criteria from your request. Please try again with more specific information about the attendees you're looking for."
+            else: 
 
-            # for att in similar_attendees: 
-                # print(att.first_name, att.last_name, att.email, att.job, att.interest)
-        else:
-            result = get_response(conversations , prompts.GENERAL_BOT_PROMPT)
+                users = await User.find(filters).to_list()
+                attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users] 
+            
+                result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
+
+                print(result)
+
+        elif request_type == "event_subject":
+            result = await answer_event_question(request.message)
             print(result)
         
-        
-
+        else: 
+            result = "Please could you clarify you request?"
     message = Message(message=result, is_user=False)
     session.chats.append(message)
     await session.save()
     logging.info("Bot response saved to session.")
-
     return {'response' : result }['response']
 
 
@@ -143,15 +191,42 @@ async def receive_whatsapp_message(
 ):
     phone_number = From.replace("whatsapp:", "")
     user_message = Body
-
     request_data = Request(phone_number=phone_number, message=user_message)
-
     result = await send_message(request_data)  # ← your original logic
-
     return result
+
+
+@app.post("/upload")
+async def upload_document(
+    file: UploadFile = File(...)
+):   
+    
+    try:
+        with NamedTemporaryFile(delete=False, suffix=file.filename) as temp_file:
+            shutil.copyfileobj(file.file, temp_file)
+            temp_path = temp_file.name
+
+        if file.filename.endswith(".docx"):
+            loader = UnstructuredWordDocumentLoader(temp_path)
+
+        else:
+            return {"error": "Unsupported file type"}
+
+        print("This is the file name: ", file.filename)
+        data = loader.load()[0].page_content 
+        await ingest_document(data, f"{file.filename}")
+
+        return {"response": "Document ingested successfully!!!"}
+
+
+    except Exception as e:
+        logging.error(f"Error ingesting document: {e}")
+        return {"response": "Failed to ingest document!!!"}
+    
+    
+
 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8001)
-
+    uvicorn.run(app, host="0.0.0.0", port=8001)

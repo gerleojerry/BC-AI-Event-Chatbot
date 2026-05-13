@@ -1,7 +1,7 @@
 import os
 from telegram import Update
 from dotenv import load_dotenv
-from main import send_message
+from main_tel import send_message
 from models import Session, Message, User, Request 
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
