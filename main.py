@@ -5,7 +5,7 @@ import asyncio
 import shutil
 from dotenv import load_dotenv
 from beanie import init_beanie
-from fastapi import FastAPI, Form
+from fastapi import FastAPI,Form,  Request, HTTPException, Query
 from asyncio import events, tasks
 from typing import Optional, Dict, Any
 from tempfile import NamedTemporaryFile
@@ -21,7 +21,7 @@ from helpers import get_conversations, get_response, get_user_info, get_event_in
 load_dotenv()
 logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
 
-
+VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 app = FastAPI()
 scheduler = AsyncIOScheduler()
 origins = ["*"]
@@ -224,6 +224,22 @@ async def upload_document(
         return {"response": "Failed to ingest document!!!"}
     
     
+# Health check
+@app.get("/")
+async def home():
+    return {"message": "API is up"}
+
+# Webhook verification
+@app.get("/webhook")
+async def verify_webhook(
+    hub_mode: str = Query(None, alias="hub.mode"),
+    hub_challenge: str = Query(None, alias="hub.challenge"),
+    hub_verify_token: str = Query(None, alias="hub.verify_token")
+):
+    if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
+        return int(hub_challenge)
+    raise HTTPException(status_code=403, detail="Forbidden")
+
 
 
 
