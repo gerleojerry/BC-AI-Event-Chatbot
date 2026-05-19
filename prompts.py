@@ -80,59 +80,263 @@ ONBOARDING_DATA_EXTRACTION = """
 
 
 AGENDA  = """
-                Agenda 2024
-                THEME:
-                Empowering the Digital Era: Data-Driven and AI Solution for a Future-Ready Africa.
-                10:00 AM - Arrival & Registration.
-                11:00 AM - Welcome Address by Tope Ajao.
-                11:10 AM - Keynote: Data-Driven Innovation: How AI is Transforming Global Industries by Scott Taylor.
-                11:50 AM - Exclusive Fireside Chat: Africa's Digital Leapfrog: Using Data and AI to Unlock Growth Potential
-                [Abubakar Suleiman, Olumide Soyombo].
-                12:15 PM - Introducing BDP: Bluechip Data Platform [Kazeem Tewogbade].
-                12:25 PM - Francis Sani — Technical Adviser (Innovation, Entrepreneurship & Capital) Federal Minister of Communications, Innovation & Digital Economy.
-                12:35 PM - Ashley Immanuel - MODERATOR; Panel 1: The Future of Work: Preparing the Next Generation for AI-Driven Careers
-                [Rachel Adeshina, Oluwafemi Lawal, Richard Amafonye, Dipo Faulkner].
-                01:15 PM - Hackathon Announcements by DSN.
-                01:35 PM - Tea Break.
-                
-                02:05 PM - Fisayo Fosudo - MODERATOR (MAIN STAGE)
-                Fireside Chat: Products of the Future: Internet Of Things, Big Data, and AI
-                [Olumide Okubadejo].
-                EARLY AFTERNOON THEATRE (BREAKOUT SESSION).
-                Building an AI-Ready Organization: Culture, Skills, and Talent (AMBER ROOM)
-                [Damilare Shittu — Microsoft].
-                Leveraging Predictive Analytics for Customer Insights (GREEN ROOM)
-                [Gabriel Adisa, Boluwaji Faniyi].
-                Cedric Tsiga - MODERATOR
-                PANEL SESSION: Cybersecurity and AI: Protecting the Digital Future (PURPLE ROOM)
-                [Prof. Abayomi Jegede, Suleiman Shaibu, Lukman Giwa, Muhammed Sirajo Aliyu].
-                Amber Room represents (Africa & Asia), Purple Room represents (Australia & Antartica) and Green Room represents (Europe & America)
-                
-                
-                03:05 PM - Adora Nwodo - MODERATOR (MAIN STAGE).
-                Panel 2: The Role of Data & AI in African Startup Evolution
-                [Dr. Dumebi Okwechime, Femi Aluko, Yen Choi].
-                AFTERNOON THEATRE (BREAKOUT SESSION).
-                Discovering The Power of Oracle AI, a Business-first Approach (PURPLE ROOM)
-                [Jide Olanlokun — Oracle].
-                Optimizing Data Analytics for "The Real Sector" (FMCGs) (GREEN ROOM)
-                [Ashok Kasimayan — Eat 'n' Go Ltd].
-                AI-Powered Business Analytics (AMBER ROOM)
-                [John Adelana — AWS].
-                04:05 PM - Lightening Talk: Leveraging AI for Inclusive Governance: A Nigerian Persepective
-                (MAIN STAGE) [Falilat Jimoh].
-                EVENING THEATRE (BREAKOUT SESSION).
-                Generate Your Preparedness for Generative AI—a Low-cost Fast Start to Your AI
-                Implementation (GREEN ROOM)
-                [Tunde Abagun — Nutanix].
-                Transforming Enterprise Data Management & Analytics with Cloud (AMBER ROOM)
-                [Jimoh Ehi Okoh — Huawei].
-                Natural Language Processing (NLP) in Healthcare: AI-Powered Chatbots and Patient
-                Data Analysis (PURPLE ROOM)
-                [Azeez Busari].
-                04:15 PM - Fireside Chat: Generative AI and its Application in Business (a PiggyVest Case Study)
-                (MAIN STAGE) [Somtochukwu Ifezue].
-                05:05 PM - Networking
+                Agenda 2026
+                {
+                    "Event Theme": "The Future, Now. AI-Driven Transformation for Africa",
+                    "schedule": [
+                        {
+                        "start_time": "9:00 AM",
+                        "end_time": "10:00 AM",
+                        "duration": "60 minutes",
+                        "session": "Arrival and Registration",
+                        "speakers": []
+                        },
+                        {
+                        "start_time": "10:00 AM",
+                        "end_time": "10:10 AM",
+                        "duration": "10 minutes",
+                        "session": "Welcome Address - The Future, Now: Africa's AI Moment",
+                        "speakers": [
+                            "Tope Ajao"
+                        ]
+                        },
+                        {
+                        "start_time": "10:10 AM",
+                        "end_time": "10:35 AM",
+                        "duration": "25 minutes",
+                        "session": "Director General NITDA",
+                        "speakers": [
+                            "Kashifu Inuwa Abdullahi"
+                        ]
+                        },
+                        {
+                        "start_time": "10:35 AM",
+                        "end_time": "11:05 AM",
+                        "duration": "30 minutes",
+                        "session": "How African Banks Win the AI Race Without Losing Trust",
+                        "speakers": [
+                            "Olumide Soyombo"
+                        ]
+                        },
+                        {
+                        "start_time": "11:05 AM",
+                        "end_time": "11:35 AM",
+                        "duration": "30 minutes",
+                        "session": "International Keynote",
+                        "speakers": [
+                            "Rosanne Werner - CEO Xcelerate10"
+                        ]
+                        },
+                        {
+                        "start_time": "11:35 AM",
+                        "end_time": "12:00 PM",
+                        "duration": "25 minutes",
+                        "session": "Bluechip Product Speech (Video + Speech YARNGPT)",
+                        "speakers": [
+                            "Kazeem Tewogbade"
+                        ]
+                        },
+                        {
+                        "start_time": "12:00 PM",
+                        "end_time": "1:00 PM",
+                        "duration": "60 minutes",
+                        "session": "Panel Session 1 - AI in Banking & Fintech: From Hype to Real Execution",
+                        "speakers": [
+                            "Victor Adewusi (Accesa)",
+                            "Bartholomew Okonkwo (CIO Fidelity)",
+                            "Racheal Adeshina (FBN)",
+                            "Dumebi Okwechime (Izifin)",
+                            "Bukola Ajayi (MTN)"
+                        ]
+                        },
+                        {
+                        "start_time": "1:00 PM",
+                        "end_time": "1:20 PM",
+                        "duration": "20 minutes",
+                        "session": "Hackathon Announcements - Prize Presentation",
+                        "speakers": [
+                            "Azeeze Busari",
+                            "DSN Team"
+                        ]
+                        },
+                        {
+                        "start_time": "1:20 PM",
+                        "end_time": "1:50 PM",
+                        "duration": "30 minutes",
+                        "session": "Tea Break",
+                        "speakers": []
+                        },
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Main Hall",
+                        "session": "AI in Industry Regulation",
+                        "speakers": [
+                            "Osagie Imasuen (NUPR)",
+                            "Abdullahi Adamu (NERC)",
+                            "Oyeleke Abayomi (CBN)",
+                            "Kunle Aina (Moderator - BCT)"
+                        ]
+                        },
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Amber Breakout Room",
+                        "session": "Building the Rails for Intelligence",
+                        "speakers": [
+                            "Roger Shutte (MTN)",
+                            "Olumbe Akinkugbe (Galaxy Backbone)",
+                            "Vremudia Oghene-Ruemu (Fringe)",
+                            "Alex Okoh (Bluechip) - Moderator"
+                        ]
+                        },
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Green Breakout Room",
+                        "session": "AI is Here. Is Your Workforce Ready?",
+                        "speakers": [
+                            "Isioma Utomi - Catalyst Solutions",
+                            "Piero Trivellato - JADA",
+                            "Tope Ajao - Primo",
+                            "Fola Olatunji - Moderator"
+                        ]
+                        },
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Purple Breakout Room",
+                        "session": "Agentic AI: Implementing & Delivering Value",
+                        "speakers": [
+                            "Temi Kolawale"
+                        ]
+                        },
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Executive Track",
+                        "session": "AI Playbook for Enterprises (Kickstart and Scale)",
+                        "speakers": [
+                            "Rosanne Werner",
+                            "Abel Abbot"
+                        ]
+                        },
+                        {
+                        "start_time": "2:35 PM",
+                        "end_time": "2:50 PM",
+                        "duration": "15 minutes",
+                        "session": "Lightning Talk by IntentHQ",
+                        "speakers": [
+                            "Jonathan Woolf",
+                            "Colin White"
+                        ]
+                        },
+                        {
+                        "start_time": "2:50 PM",
+                        "end_time": "3:05 PM",
+                        "duration": "15 minutes",
+                        "session": "Lightning Talk by Huawei",
+                        "speakers": []
+                        },
+                        {
+                        "start_time": "3:05 PM",
+                        "end_time": "3:20 PM",
+                        "duration": "15 minutes",
+                        "session": "Lightning Talk - Informatica",
+                        "speakers": []
+                        },
+                        {
+                        "start_time": "2:35 PM",
+                        "end_time": "3:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Amber Breakout Room",
+                        "session": "Workshop - Hands-On with AWS GenAI: Building Your First Intelligent Application on Amazon Bedrock",
+                        "speakers": [
+                            "AWS"
+                        ]
+                        },
+                        {
+                        "start_time": "2:35 PM",
+                        "end_time": "3:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Green Breakout Room",
+                        "session": "The Intelligent Enterprise: Data, Cloud & Ops",
+                        "speakers": [
+                            "Oracle"
+                        ]
+                        },
+                        {
+                        "start_time": "2:35 PM",
+                        "end_time": "3:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Purple Breakout Room & Executive Track",
+                        "session": "Master class - Idea to Product",
+                        "speakers": [
+                            "Saheed Azeez"
+                        ]
+                        },
+                        {
+                        "start_time": "3:20 PM",
+                        "end_time": "3:35 PM",
+                        "duration": "15 minutes",
+                        "session": "Redington",
+                        "speakers": []
+                        },
+                        {
+                        "start_time": "3:35 PM",
+                        "end_time": "4:05 PM",
+                        "duration": "30 minutes",
+                        "session": "SheCodes the Algorithm: The Power of Women Rewriting Data & AI",
+                        "speakers": [
+                            "Margaret Olele (CEO American Business Council)",
+                            "Uzo Nwani",
+                            "Fifehan Osikanlu",
+                            "Olamide Miriam - Moderator"
+                        ]
+                        },
+                        {
+                        "start_time": "3:35 PM",
+                        "end_time": "4:05 PM",
+                        "duration": "30 minutes",
+                        "session": "Deploying AI-Ready Infrastructure in your Enterprise",
+                        "speakers": [
+                            "Dell"
+                        ]
+                        },
+                        {
+                        "start_time": "3:35 PM",
+                        "end_time": "4:05 PM",
+                        "duration": "30 minutes",
+                        "session": "African Networks & AI",
+                        "speakers": [
+                            "Huawei"
+                        ]
+                        },
+                        {
+                        "start_time": "3:35 PM",
+                        "end_time": "4:05 PM",
+                        "duration": "30 minutes",
+                        "session": "Scaling AI in Energy",
+                        "speakers": [
+                            "Excel Ukpohor (NLNG)",
+                            "Dolapo Ajayi (Dangote)",
+                            "Olawale Olasoju - BCT (Moderator)"
+                        ]
+                        },
+                        {
+                        "start_time": "4:05 PM",
+                        "end_time": "4:20 PM",
+                        "duration": "15 minutes",
+                        "session": "Closing Remarks",
+                        "speakers": []
+                        }
+                    ]
+                    }
 """
 
 

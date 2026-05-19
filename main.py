@@ -1,8 +1,10 @@
 import os
 import logging
 import prompts
-import asyncio
 import shutil
+import asyncio
+import aiohttp
+from pprint import pprint
 from dotenv import load_dotenv
 from beanie import init_beanie
 from fastapi import FastAPI,Form,  Request, HTTPException, Query
@@ -80,6 +82,37 @@ async def root():
 @app.post("/create")
 def create_user(): 
     return {"message": "User created successfully"}
+
+
+
+# Send response to WhatsApp User
+async def _post(data: dict):
+        headers = {
+    "Content-type": "application/json",
+    "Authorization": f"Bearer {os.getenv('WHATSAPP_ACCESS_TOKEN')}",
+    }
+        async with aiohttp.ClientSession() as session:
+            url = f"{os.getenv('BASE_URL')}/{os.getenv('API_VERSION')}/{os.getenv('PHONE_NUMBER_ID')}/messages"
+            try:
+                async with session.post(url, json=data,headers=headers) as resp:
+                    if resp.status != 200:
+                        return {"success":False, "message":"Error occurred"}
+                    return {"success":True, "message":"Successful operation"}
+            except Exception as e:
+                logging.error(f"Error sending message: {e}")
+                return {"success":False, "message": str(e)}
+            
+
+async def send_text_message(to:str, text: str, preview_url: bool = False):       
+    print(f"Bot response: {text}")
+    return await _post({
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": to,
+        "type": "text",
+        "text": {"preview_url": preview_url, "body": text}
+    })
+
 
 async def send_message(request: Request):
     user = await User.find_one({'phone_number' : request.phone_number})
@@ -181,7 +214,12 @@ async def send_message(request: Request):
     session.chats.append(message)
     await session.save()
     logging.info("Bot response saved to session.")
-    return {'response' : result }['response']
+    whatsapp_msg = await send_text_message(request.phone_number, result)
+    if whatsapp_msg:
+        return {"success": True, "detail":"Message sent"}
+    else:
+        return {"success": False, "detail": "Message not sent"}
+    # return {'response' : result }['response']
 
 
 @app.post("/message")
@@ -229,6 +267,8 @@ async def upload_document(
 async def home():
     return {"message": "API is up"}
 
+
+
 # Webhook verification
 @app.get("/webhook")
 async def verify_webhook(
@@ -239,6 +279,35 @@ async def verify_webhook(
     if hub_mode == "subscribe" and hub_verify_token == VERIFY_TOKEN:
         return int(hub_challenge)
     raise HTTPException(status_code=403, detail="Forbidden")
+
+
+
+
+@app.post("/whatsapp/callback")
+async def whatsapp_callback(request: Request):
+    payload = await request.json()  # parse JSON body into dict
+    pprint(f"{payload=}")
+
+    if payload.get("object") != "whatsapp_business_account":
+        return {"error": "Invalid object"}
+
+    for entry in payload.get("entry", []):
+        for change in entry.get("changes", []):
+            if change.get("field") == "messages":
+                for msg in change.get("value", {}).get("messages", []):
+                    if msg.get("type") == "text":
+                        print(
+                            f"{msg.get('from')} sent you a message!\n"
+                            f"The content of the message reads: {msg.get('text', {}).get('body')}"
+                        )
+                        await process_message(
+                            msg.get("from"),
+                            msg.get("text", {}).get("body", "")
+                        )
+                   
+                    
+
+    return {"success": True, "status": "Message received"}
 
 
 
