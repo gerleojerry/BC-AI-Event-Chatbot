@@ -283,7 +283,7 @@ async def verify_webhook(
 
 
 
-@app.post("/whatsapp/callback")
+@app.post("/webhook")
 async def whatsapp_callback(request: Request):
     payload = await request.json()  # parse JSON body into dict
     pprint(f"{payload=}")
