@@ -56,7 +56,7 @@ async def job():
     for doc in docs: 
         event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
         message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
-        request_data = Request(phone_number=phone_number, message=message)
+        request_data = RequestSchema(phone_number=phone_number, message=message)
         print(message)
         # await send_whatsapp_message(request_data)
 
@@ -229,7 +229,7 @@ async def receive_whatsapp_message(
 ):
     phone_number = From.replace("whatsapp:", "")
     user_message = Body
-    request_data = Request(phone_number=phone_number, message=user_message)
+    request_data = RequestSchema(phone_number=phone_number, message=user_message)
     result = await send_message(request_data)  # ← your original logic
     return result
 
@@ -313,7 +313,7 @@ async def whatsapp_callback(request: Request):
                         #     msg.get("from"),
                         #     msg.get("text", {}).get("body", "")
                         # )
-                        request_data = Request(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
+                        request_data = RequestSchema(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
                         result = await send_message(request_data)  # ← your original logic
                    
                     
