@@ -317,6 +317,9 @@ async def whatsapp_callback(request: Request):
                         # )
                         request_data = RequestSchema(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
                         result = await send_message(request_data)  # ← your original logic
+
+            else: 
+                result = "Sorry, I can only process text messages for now."
                    
                     
 
