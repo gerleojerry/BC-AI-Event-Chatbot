@@ -15,7 +15,7 @@ from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime, timezone, timedelta, time
-from models import Session, Message, User, Request, Event
+from models import Session, Message, User, RequestSchema, Event
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, find_similar_documents, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question
@@ -114,11 +114,11 @@ async def send_text_message(to:str, text: str, preview_url: bool = False):
     })
 
 
-async def send_message(request: Request):
+async def send_message(request: RequestSchema):
     user = await User.find_one({'phone_number' : request.phone_number})
 
     if not user: 
-        print("THis is a new user")
+        print("This is a new user")
         session = await Session.find_one({"phone_number": request.phone_number})
         if not session: 
             session =  Session(phone_number = request.phone_number)
@@ -254,7 +254,15 @@ async def upload_document(
         data = loader.load()[0].page_content 
         await ingest_document(data, f"{file.filename}")
 
-        return {"response": "Document ingested successfully!!!"}
+        # Select all the user that registered for the event. 
+
+        # Loop through all the users and send them a message. 
+        filters = {}
+
+        users = await Event.find(filters).to_list()
+
+
+        return {"response": "Document ingested and shared to the interested parties successfully!!!"}
 
 
     except Exception as e:
@@ -285,6 +293,7 @@ async def verify_webhook(
 
 @app.post("/webhook")
 async def whatsapp_callback(request: Request):
+    print("The webhoo has been called.")
     payload = await request.json()  # parse JSON body into dict
     pprint(f"{payload=}")
 
@@ -300,14 +309,16 @@ async def whatsapp_callback(request: Request):
                             f"{msg.get('from')} sent you a message!\n"
                             f"The content of the message reads: {msg.get('text', {}).get('body')}"
                         )
-                        await process_message(
-                            msg.get("from"),
-                            msg.get("text", {}).get("body", "")
-                        )
+                        # await process_message(
+                        #     msg.get("from"),
+                        #     msg.get("text", {}).get("body", "")
+                        # )
+                        request_data = Request(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
+                        result = await send_message(request_data)  # ← your original logic
                    
                     
 
-    return {"success": True, "status": "Message received"}
+    return {"success": True, 'response': result, "status": "Message received"}
 
 
 

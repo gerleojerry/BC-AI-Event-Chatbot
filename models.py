@@ -57,7 +57,7 @@ class User(BaseDocument):
         name = "users"
 
 
-class Request(BaseModel):
+class RequestSchema(BaseModel):
     phone_number: str
     message: str
 

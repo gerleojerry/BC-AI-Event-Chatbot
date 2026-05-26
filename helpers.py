@@ -36,7 +36,6 @@ CHUNK_COLLECTION = "chunk_index"
 
 EMBED_MODEL = "text-embedding-3-large"
 
-# model_name = "gpt-4o-mini"
 NANO_MODEL_NAME = "gpt-5.4-nano-2026-03-17"
 MODEL_NAME = "gpt-5.4-mini-2026-03-17"
 LARGE_MODEL_NAME = "gpt-5.4-2026-03-05"

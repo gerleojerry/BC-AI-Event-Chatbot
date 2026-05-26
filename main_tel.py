@@ -222,6 +222,15 @@ async def upload_document(
         data = loader.load()[0].page_content 
         await ingest_document(data, f"{file.filename}")
 
+        filters = {'name' : f"{file.filename}"}
+        events = await Event.find(filters).to_list()
+
+        for event in events:
+            event_name, event_time, event_room, phone_number = event.name, event.date_time, event.room, event.phone_number
+            # message = f"Knowledge base for '{event_name}' is ready. Please let me know if you have any question regarding the session."
+            # request_data = Request(phone_number=phone_number, message=message)
+            # await send_message(request_data)
+
         return {"response": "Document ingested successfully!!!"}
 
 

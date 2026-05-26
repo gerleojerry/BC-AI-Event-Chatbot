@@ -43,3 +43,44 @@
 #         print(f"Failed to send message to {to}. Response: {response.status_code} {response.text}")
 #     else:
 #         print(f"Message sent to {to}.")
+
+
+
+
+import qrcode
+from urllib.parse import quote
+
+# WhatsApp number
+phone_number = "+15559697072"
+
+# Message
+message = (
+    "Hello, I would like to sign up and receive assistance "
+    "from the BlueChip AI Summit 2026 chatbot."
+)
+
+# Encode message
+encoded_message = quote(message)
+
+# WhatsApp link
+whatsapp_link = f"https://wa.me/{phone_number}?text={encoded_message}"
+
+# Create high-quality QR code
+qr = qrcode.QRCode(
+    version=None,
+    error_correction=qrcode.constants.ERROR_CORRECT_H,
+    box_size=20,
+    border=5
+)
+
+qr.add_data(whatsapp_link)
+qr.make(fit=True)
+
+# Generate image
+img = qr.make_image(fill_color="black", back_color="white")
+
+# Save high-resolution PNG
+img.save("bluechip_ai_summit_qr.png")
+
+print("High-quality QR Code generated successfully!")
+print(whatsapp_link)
