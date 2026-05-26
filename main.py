@@ -302,6 +302,7 @@ async def whatsapp_callback(request: Request):
     if payload.get("object") != "whatsapp_business_account":
         return {"error": "Invalid object"}
 
+    result = "Sorry, I can only process text messages for now."
     for entry in payload.get("entry", []):
         for change in entry.get("changes", []):
             if change.get("field") == "messages":
@@ -318,8 +319,7 @@ async def whatsapp_callback(request: Request):
                         request_data = RequestSchema(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
                         result = await send_message(request_data)  # ← your original logic
 
-            else: 
-                result = "Sorry, I can only process text messages for now."
+   
                    
                     
 
