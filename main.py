@@ -87,10 +87,12 @@ def create_user():
 
 # Send response to WhatsApp User
 async def _post(data: dict):
+        print(f"This is the data being sent to WhatsApp API: {data} from the post function.")
         headers = {
-    "Content-type": "application/json",
-    "Authorization": f"Bearer {os.getenv('WHATSAPP_ACCESS_TOKEN')}",
-    }
+                    "Content-type": "application/json",
+                    "Authorization": f"Bearer {os.getenv('WHATSAPP_ACCESS_TOKEN')}",
+                    }
+        
         async with aiohttp.ClientSession() as session:
             url = f"{os.getenv('BASE_URL')}/{os.getenv('API_VERSION')}/{os.getenv('PHONE_NUMBER_ID')}/messages"
             try:
