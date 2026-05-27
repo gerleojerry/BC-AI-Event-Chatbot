@@ -199,14 +199,16 @@ async def send_message(request: RequestSchema):
             parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
             print(parsed)
             filters = build_beanie_query(parsed)
-            print(filters)
+    
 
             if len(filters) == 1:
                 result = "Sorry, I couldn't get any valid criteria from your request. Please try again with more specific information about the attendees you're looking for."
             else: 
 
+                filters["phone_number"] = {"$ne": request.phone_number}
+                print(filters)
                 users = await User.find(filters).to_list()
-                attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users] 
+                attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
             
                 result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
 
