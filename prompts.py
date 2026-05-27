@@ -21,6 +21,7 @@ ONBOARDING_PROMPTS = """
     IMPORTANT NOTE: 
     - make sure that you ask for the firstname and lastname in the the same message. 
     - Address the user with their first name not full name if their first name is available.
+    - When the user respond to any of the questions, thank them and include the firstname and ask the next question e.g. thank you firstname, then ask the next question.
     - Don't recommend a response to the user, just ask them for the information you need to collect in each step without welcoming them.
     - Don't welcome the user after the first message, just welcome them in the first message and then start the onboarding process without introducing yourself and welcoming them.
     - If the user enters their full name i.e. two names in the first step e.g. John Doe, don't ask for the lastname and move on to the next question.

@@ -56,9 +56,15 @@ async def job():
     for doc in docs: 
         event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
         message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
-        request_data = RequestSchema(phone_number=phone_number, message=message)
+        # request_data = RequestSchema(phone_number=phone_number, message=message)
         print(message)
-        # await send_whatsapp_message(request_data)
+        whatsapp_msg = await send_text_message(phone_number, message)
+        if whatsapp_msg:
+            return {"success": True, "detail":"Message sent"}
+        else:
+            return {"success": False, "detail": "Message not sent"}
+        
+    
 
 async def init_db():
     collection_name = os.getenv("MONGO_DB_COLLECTION")
@@ -211,7 +217,7 @@ async def send_message(request: RequestSchema):
             print(result)
         
         else: 
-            result = "Please could you clarify you request?"
+            result = "Please can you clarify your request?"
     message = Message(message=result, is_user=False)
     session.chats.append(message)
     await session.save()
@@ -259,9 +265,13 @@ async def upload_document(
         # Select all the user that registered for the event. 
 
         # Loop through all the users and send them a message. 
-        filters = {}
+        filters = {'name' : file.filename}
 
         users = await Event.find(filters).to_list()
+        for user in users: 
+            message = f"Knowledge based for the session '{file.filename}' is ready and shared to you because you registered for it. Feel free to ask any question regarding the session and I will be happy to assist you."
+            await send_text_message(user.phone_number, message)
+        
 
 
         return {"response": "Document ingested and shared to the interested parties successfully!!!"}
