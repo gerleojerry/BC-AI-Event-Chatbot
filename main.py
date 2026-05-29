@@ -233,12 +233,12 @@ async def send_message(request: RequestSchema):
     session.chats.append(message)
     await session.save()
     logging.info("Bot response saved to session.")
-    # whatsapp_msg = await send_text_message(request.phone_number, result)
-    # if whatsapp_msg:
-    #     return {"success": True, "detail":"Message sent"}
-    # else:
-    #     return {"success": False, "detail": "Message not sent"}
-    return {'response' : result }['response']
+    whatsapp_msg = await send_text_message(request.phone_number, result)
+    if whatsapp_msg:
+        return {"success": True, "detail":"Message sent"}
+    else:
+        return {"success": False, "detail": "Message not sent"}
+    # return {'response' : result }['response']
 
 
 @app.post("/message")
