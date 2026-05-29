@@ -40,19 +40,19 @@ async def job():
     print("Running job...")
     # now = datetime.now(timezone.utc)
     now = datetime.now()
-    fifteen_minutes_later = now + timedelta(minutes=15)
+    ten_minutes_later = now + timedelta(minutes=9)
     print(f"This the current time: {now}")
     # print(f"This is the time 10 minutes later: {ten_minutes_later}")
     docs = await Event.find(
     {
         "date_time": {
             "$gte": now,
-            "$lte": fifteen_minutes_later
+            "$lte": ten_minutes_later
         }
     }
         ).to_list()
     
-    print(f"This is the upcoming events in the next 15 minutes: {len(docs)}")
+    print(f"This is the upcoming events in the next 10 minutes: {len(docs)}")
     for doc in docs: 
         event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
         message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
@@ -73,7 +73,7 @@ async def init_db():
     await init_beanie(database=client[collection_name], document_models=[Session, User, Event])
 
 def start_scheduler():
-    scheduler.add_job(job, "interval", minutes=30)
+    scheduler.add_job(job, "interval", minutes=10)
     scheduler.start()
 
 @app.on_event("startup")
