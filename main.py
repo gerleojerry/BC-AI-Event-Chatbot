@@ -18,7 +18,7 @@ from datetime import datetime, timezone, timedelta, time
 from models import Session, Message, User, RequestSchema, Event
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
-from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, find_similar_documents, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question
+from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, find_similar_documents, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
@@ -197,7 +197,7 @@ async def send_message(request: RequestSchema):
 
                 events_data = "\n".join([f"{event['name']} at {event['time']} in room {event['room']}" for event in events])
 
-                result =  f"A reminder has been set for you for the following event(s): {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
+                result =  f"A reminder has been set for you for the following event(s): {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any questions regarding the event?"
 
         elif request_type == "networking":
             
@@ -229,6 +229,7 @@ async def send_message(request: RequestSchema):
         
         else: 
             result = "Please can you clarify your request?"
+    result= text_formater(result, prompts.RESPONSE_FORMATTER_PROMPT)
     message = Message(message=result, is_user=False)
     session.chats.append(message)
     await session.save()

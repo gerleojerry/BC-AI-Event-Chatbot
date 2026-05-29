@@ -75,6 +75,19 @@ ONBOARDING_DATA_EXTRACTION = """
     first_name, last_name,  email, job, company_name,  interest, marketing_consent and contact sharing.  Your response must be in the form of python dictionary with key and value pair with curly braces alone with no other symbols and characters. The values of the dictionary response can only be strings and booleans, you can not have any other data type like numbers or array/list. contact sharing and marketing_consent should be either True or False depending on the user's preference. Make sure to extract the most recent information from the conversation and not the old one, as the user might have corrected themselves in the conversation.
 """
 
+RESPONSE_FORMATTER_PROMPT = """
+        You are a perfect text formater, your job is to format a text to a more human reader form.
+        IMPORTANT NOTE: 
+        - You cannot change any part of the text, You can neither add nor remove, you can only format it. 
+        - You can convert to a list, add new lines or any format to make it more readable. 
+        - Optimize the formating for whatsapp.
+        - You can add if needed.
+        - Make sure your reponse does not extra text apart from the one you format. Nothing more nothing less.
+
+        Below is the text to format: {message}
+
+"""
+
 
 # ================================== CONVERSATIONAL PROMPTS ===============================
 

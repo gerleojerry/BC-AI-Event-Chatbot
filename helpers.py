@@ -156,6 +156,16 @@ def get_networking_user_info(query, extraction_prompt) :
     return response
 
 
+def text_formater(conversations, text_formatter_prompt) : 
+
+    format = PromptTemplate.from_template(text_formatter_prompt)
+    format_chain = format | MODEL
+
+    response = format_chain.invoke({"message" : conversations }).content
+
+    return response
+
+
 large_embedding = "text-embedding-3-large"
 small_embedding = "text-embedding-3-small"
 
