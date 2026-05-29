@@ -84,7 +84,7 @@ class EventItem(BaseModel):
         room : str = Field(description = "The room where the event will take place.")
 
 class Event(BaseModel): 
-    people: List[EventItem]
+    event: List[EventItem]
        
 
 

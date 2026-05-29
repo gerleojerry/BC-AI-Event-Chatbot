@@ -177,22 +177,27 @@ async def send_message(request: RequestSchema):
             pass
 
         elif request_type == "reminder_confirmation":
-            events = get_event_info(conversations , prompts.EVENT_DATA_EXTRACTION)['people']
+            events = get_event_info(conversations , prompts.EVENT_DATA_EXTRACTION)['event']
             print(events)
-            event_info = []
-            for event in events:
-                hour, minute = map(int, event['time'].split(":"))
-                stored_time = time(hour, minute)
-                now = datetime.now(timezone.utc)
-                event_date = datetime.combine(now.date(), stored_time)
-                print(event_date)
-                event_info.append(Event(name = event['name'], date_time = event_date, room = event['room'], phone_number = request.phone_number))
+            if len(events) == 0: 
+                result = "Sorry, Please make sure to include the name of the event, the time of the event and the room of the event in your message if you want to set a reminder for a particular event."
+            elif len(events) == 1 and any(value == "" for value in events[0].values()):
+                result = "Sorry, Please make sure to include the name of the event, the time of the event and the room of the event in your message if you want to set a reminder for a particular event."
+            else:
+                event_info = []
+                for event in events:
+                    hour, minute = map(int, event['time'].split(":"))
+                    stored_time = time(hour, minute)
+                    now = datetime.now(timezone.utc)
+                    event_date = datetime.combine(now.date(), stored_time)
+                    print(event_date)
+                    event_info.append(Event(name = event['name'], date_time = event_date, room = event['room'], phone_number = request.phone_number))
 
-            await Event.insert_many(event_info)
+                await Event.insert_many(event_info)
 
-            events_data = "\n".join([f"{event['name']} at {event['time']} in room {event['room']}" for event in events])
+                events_data = "\n".join([f"{event['name']} at {event['time']} in room {event['room']}" for event in events])
 
-            result =  f"A reminder has been set for you for the following events: {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
+                result =  f"A reminder has been set for you for the following events: {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
 
         elif request_type == "networking":
             
@@ -218,18 +223,22 @@ async def send_message(request: RequestSchema):
             result = await answer_event_question(request.message)
             print(result)
         
+        elif request_type == "complimentary":
+            result = "You're welcome! If you have any more questions or need further assistance, feel free to ask. Enjoy the event! 😊"
+            print(result)
+        
         else: 
             result = "Please can you clarify your request?"
     message = Message(message=result, is_user=False)
     session.chats.append(message)
     await session.save()
     logging.info("Bot response saved to session.")
-    whatsapp_msg = await send_text_message(request.phone_number, result)
-    if whatsapp_msg:
-        return {"success": True, "detail":"Message sent"}
-    else:
-        return {"success": False, "detail": "Message not sent"}
-    # return {'response' : result }['response']
+    # whatsapp_msg = await send_text_message(request.phone_number, result)
+    # if whatsapp_msg:
+    #     return {"success": True, "detail":"Message sent"}
+    # else:
+    #     return {"success": False, "detail": "Message not sent"}
+    return {'response' : result }['response']
 
 
 @app.post("/message")

@@ -15,8 +15,7 @@ ONBOARDING_PROMPTS = """
     - After asking for their email address, you can then ask for consent to share their information for marketing purposes.
     - After you have collected all the necessary information, you can then ask them to confirm that the information they have given is correct, if they say no, then you can repeat the process again, if they say yes, then you can proceed to the next step.
     - When confirming the information, make sure to present the information you have collected showing the data and the values so that they can know which value belongs to which data in a concise way.
-    - After confirming that the information is correct, let them know that they have successfully completed the registration process and ask them if they want to know anything about the event or they want a recommendation on sessions of the event matches their interest the most.
-
+    - After confirming that the information is correct, you can let the know this : You're all set! 🎉 Your registration is complete. What would you like to do next — get personalised session recommendations, find out more about the event, see who else is attending, or set reminders for sessions you don't want to miss.
 
     IMPORTANT NOTE: 
     - make sure that you ask for the firstname and lastname in the the same message. 
@@ -231,6 +230,7 @@ AGENDA  = """
                         "start_time": "2:35 PM",
                         "end_time": "2:50 PM",
                         "duration": "15 minutes",
+                        "room": "Main Hall",
                         "session": "Lightning Talk by IntentHQ",
                         "speakers": [
                             "Jonathan Woolf",
@@ -241,6 +241,7 @@ AGENDA  = """
                         "start_time": "2:50 PM",
                         "end_time": "3:05 PM",
                         "duration": "15 minutes",
+                        "room": "Main Hall",
                         "session": "Lightning Talk by Huawei",
                         "speakers": []
                         },
@@ -248,6 +249,7 @@ AGENDA  = """
                         "start_time": "3:05 PM",
                         "end_time": "3:20 PM",
                         "duration": "15 minutes",
+                        "room": "Main Hall",
                         "session": "Lightning Talk - Informatica",
                         "speakers": []
                         },
@@ -285,6 +287,7 @@ AGENDA  = """
                         "start_time": "3:20 PM",
                         "end_time": "3:35 PM",
                         "duration": "15 minutes",
+                        "room": "All the rooms",
                         "session": "Redington",
                         "speakers": []
                         },
@@ -292,6 +295,7 @@ AGENDA  = """
                         "start_time": "3:35 PM",
                         "end_time": "4:05 PM",
                         "duration": "30 minutes",
+                        "room": "Main Hall",
                         "session": "SheCodes the Algorithm: The Power of Women Rewriting Data & AI",
                         "speakers": [
                             "Margaret Olele (CEO American Business Council)",
@@ -304,6 +308,7 @@ AGENDA  = """
                         "start_time": "3:35 PM",
                         "end_time": "4:05 PM",
                         "duration": "30 minutes",
+                        "room": "Amber Breakout Room",
                         "session": "Deploying AI-Ready Infrastructure in your Enterprise",
                         "speakers": [
                             "Dell"
@@ -313,6 +318,7 @@ AGENDA  = """
                         "start_time": "3:35 PM",
                         "end_time": "4:05 PM",
                         "duration": "30 minutes",
+                        "room": "Green Breakout Room",
                         "session": "African Networks & AI",
                         "speakers": [
                             "Huawei"
@@ -322,6 +328,7 @@ AGENDA  = """
                         "start_time": "3:35 PM",
                         "end_time": "4:05 PM",
                         "duration": "30 minutes",
+                        "room": "Purple Breakout Room & Executive Track",
                         "session": "Scaling AI in Energy",
                         "speakers": [
                             "Excel Ukpohor (NLNG)",
@@ -371,8 +378,8 @@ EVENT_BOT_PROMPT = """
 
               
                 IMPORTANT NOTE:
+                    - When a person requests to want to set a reminder for a session without passing through the recommendation process, then you have you get the room and the start time of the session from the agenda below.
                     - Always make sure to be polite and professional in your response, and make sure to address the user with their first name.
-
 
                     - All responses must be short and sweet as possible, no response should be more than 2 sentences, and make sure to be polite and professional in your response.
 
@@ -397,9 +404,10 @@ CONVERSATION_STAGE_DETECTOR = """
    Please follow these information to detect the phase of the conversation:
 
     - The event phase is the phase where the user is asking questions regarding the event and you are answering them based on the information in the agenda for the event, or the user asks about recommending sections of the event that aligns with their interest and you are recommending them based on the information in the agenda for the event.
-    - The networking phase is the phase where the user asks for any information of other attendees. It can be if when the user asks for attendees from a company or attendees with a particular job role etc. it is basically when the user is asking for information about other attendees that is not related to the event but related to the attendees themselves.
-    - reminder confirmation phase is the phase where the user was asked if they want a reminder on the recommended events or any events or there was a response to the request for a confirmation of a reminder. 
+    - The networking phase is the phase where the user asks for any information about other attendees. It can be if when the user asks for attendees from a particular company or attendees with a particular job role etc. it is basically when the user is asking for information about other attendees that is not related to the event but related to the attendees themselves.
+    - reminder confirmation phase is the phase where the user was asked if they want a reminder on the recommended events or any events or there was a response to the request for a confirmation of a reminder or the user explicitly asks for a reminder for an event(s). 
     - The event subject is a phase where the user asks question about anything that was said/done in the event, e.g. when somone asks what a particular speaker said about a particular topic. This is strictly about what happened during the event, It is most about topics that was spoken about, not information about the event that is in the agenda for the event.
+    - complimentary phase: This is the phase when a user user wants to end a conversation or the users is giving a compliment or saying thank you or goodbye or no other questions or any other thing that indicates that they want to end the conversation.
 
     IMPORTANT NOTE:
     - The most recent question or statement from the user takes the most precedence in the conversation and should be the most important factor to consider when detecting the phase of the conversation, but you can also consider the previous conversations as well to get more context about the user's interest and preferences.
@@ -409,6 +417,7 @@ CONVERSATION_STAGE_DETECTOR = """
    networking : networking
    reminder confirmation : reminder_confirmation
    event subject : event_subject
+   complimentary : complimentary
        
     NB: 
     Note that the response must only contain the above single word without any punctuation or character i.e. netowrking or reminder_confirmation, event_subject. Nothing more, nothing less.
