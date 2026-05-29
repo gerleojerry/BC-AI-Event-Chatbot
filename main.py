@@ -197,7 +197,7 @@ async def send_message(request: RequestSchema):
 
                 events_data = "\n".join([f"{event['name']} at {event['time']} in room {event['room']}" for event in events])
 
-                result =  f"A reminder has been set for you for the following events: {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
+                result =  f"A reminder has been set for you for the following event(s): {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any question regarding the event?"
 
         elif request_type == "networking":
             
