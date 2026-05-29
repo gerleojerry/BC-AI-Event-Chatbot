@@ -207,7 +207,7 @@ async def send_message(request: RequestSchema):
 
                 filters["phone_number"] = {"$ne": request.phone_number}
                 print(filters)
-                users = await User.find(filters).to_list()
+                users = await User.find(filters).limit(10).to_list()
                 attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
             
                 result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
