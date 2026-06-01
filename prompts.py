@@ -422,11 +422,14 @@ CONVERSATION_STAGE_DETECTOR = """
     - The event phase is the phase where the user is asking questions regarding the event and you are answering them based on the information in the agenda for the event, or the user asks about recommending sections of the event that aligns with their interest and you are recommending them based on the information in the agenda for the event.
     - The networking phase is the phase where the user asks for any information about other attendees. It can be if when the user asks for attendees from a particular company or attendees with a particular job role etc. it is basically when the user is asking for information about other attendees that is not related to the event but related to the attendees themselves.
     - reminder confirmation phase is the phase where the user was asked if they want a reminder on the recommended events or any events or there was a response to the request for a confirmation of a reminder or the user explicitly asks for a reminder for an event(s). 
-    - The event subject is a phase where the user asks question about anything that was said/done in the event, e.g. when somone asks what a particular speaker said about a particular topic. This is strictly about what happened during the event, It is most about topics that was spoken about, not information about the event that is in the agenda for the event.
-    - complimentary phase: This is the phase when a user user wants to end a conversation or the users is giving a compliment or saying thank you or goodbye or no other questions or any other thing that indicates that they want to end the conversation.
+    - The event_subject is a phase where the user asks question about anything that was said/done in the event, e.g. when somone asks what a particular speaker said about a particular topic. This is strictly about what happened during the event, It is most about topics that was spoken about, not information about the event that is in the agenda for the event.
+    - complimentary phase: This is the phase when a user user wants to end a conversation or the users is giving a compliment or saying thank you or goodbye or 'no other questions' or any other thing that indicates that they want to end the conversation. 
 
     IMPORTANT NOTE:
     - The most recent question or statement from the user takes the most precedence in the conversation and should be the most important factor to consider when detecting the phase of the conversation, but you can also consider the previous conversations as well to get more context about the user's interest and preferences.
+    - When a user asks what a particular is speaking about (present and future) then the stage should be event, but when a user asks about what a particular speaker said or spoke about a particular topic (past), then it should be event_subject, because it is about what was said in the event and not about the event itself.
+    - messages like "how are you?" or "hi" or "hello" or "what's up?" should belong in the event phase. 
+
    
    Give the response below when you detect the networking phase: 
    event : event
