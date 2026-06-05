@@ -21,7 +21,7 @@ from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
 load_dotenv()
-logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
+# logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
 
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 app = FastAPI()

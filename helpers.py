@@ -23,7 +23,7 @@ from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
 
 load_dotenv()
 
-logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
+# logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
 
 os.environ["OPENAI_API_KEY"] =  os.getenv("OPENAI_API_KEY")
 
