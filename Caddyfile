@@ -1,0 +1,3 @@
+izifin.strogent.name.ng {
+    reverse_proxy localhost:8000
+}
