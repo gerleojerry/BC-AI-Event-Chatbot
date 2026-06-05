@@ -11,6 +11,13 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   qdrant:
     image: qdrant/qdrant
@@ -20,16 +27,22 @@ services:
       - "6333:6333"
     volumes:
       - qdrant_data:/qdrant/storage
+    networks:
+      - app-network
 
   api:
     build: .
     ports:
       - "8000:8000"
     depends_on:
-      - mongodb
-      - qdrant
+      mongodb:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
     env_file:
       - .env
+    networks:
+      - app-network
 
   caddy:
     image: caddy:latest
@@ -43,9 +56,15 @@ services:
       - caddy_config:/config
     depends_on:
       - api
+    networks:
+      - app-network
 
 volumes:
   mongo_data:
   qdrant_data:
   caddy_data:
   caddy_config:
+
+networks:
+  app-network:
+    driver: bridge
