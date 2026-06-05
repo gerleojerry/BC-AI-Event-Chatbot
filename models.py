@@ -49,7 +49,7 @@ class User(BaseDocument):
     job: str
     company: str
     contact_share: bool
-    email: str = None
+    email: str
     marketing_consent: bool = False
     embedded_interest : Optional[List[float]] = None
     

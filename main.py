@@ -2,23 +2,23 @@ import os
 import logging
 import prompts
 import shutil
-import asyncio
 import aiohttp
 from pprint import pprint
 from dotenv import load_dotenv
 from beanie import init_beanie
-from fastapi import FastAPI,Form,  Request, HTTPException, Query
-from asyncio import events, tasks
-from typing import Optional, Dict, Any
+# from typing import Optional, Dict, Any
+from qdrant_client import QdrantClient
 from tempfile import NamedTemporaryFile
 from fastapi import FastAPI, UploadFile, File
-from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
-from datetime import datetime, timezone, timedelta, time
-from models import Session, Message, User, RequestSchema, Event
+from fastapi.middleware.cors import CORSMiddleware
+from qdrant_client.models import VectorParams, Distance
+from datetime import datetime, timedelta, time, date
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from models import Session, Message, User, RequestSchema, Event
+from fastapi import FastAPI,Form,  Request, HTTPException, Query
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
-from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, find_similar_documents, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
+from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO,  format='%(asctime)s - %(levelname)s - %(message)s',  handlers=[logging.FileHandler('app.log', mode='w'), logging.StreamHandler()])
@@ -35,6 +35,49 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+async def daily_countdown(): 
+    print("Daily countdown job has begun!!")
+
+    today = date.today()
+    event_date = date(2026, 6, 10)
+    difference = (event_date - today).days
+    users = await User.find_all().to_list()
+
+    for user in users: 
+        user_name, phone_number = user.first_name, user.phone_number
+        message = f"Hi {user_name}, 🚀 only {difference} days left! The BlueChip Data & AI Summit 3rd Edition is almost here!"
+        print(message)
+        whatsapp_msg = await send_text_message(phone_number, message)
+        if whatsapp_msg:
+            return {"success": True, "detail":"Message sent"}
+        else:
+            return {"success": False, "detail": "Message not sent"}
+        
+
+def check_event_date(): 
+    today = date.today()
+    event_date = date(2026, 6, 10)
+
+    return today == event_date
+
+
+async def survey_job(): 
+    print("Survey job has begun!!")
+    users = await User.find_all().to_list()
+
+    for user in users: 
+        user_name, phone_number = user.first_name, user.phone_number
+        message = f"Hi {user_name}, we’d love your feedback on your experience with our chatbot and the event. Please take a moment to complete this short survey. https://docs.google.com/forms/d/e/1FAIpQLSe4MBtg4IgF5-GKS5yppk1QVJb8yVrGo_Ctok6yzlGN9BT-8Q/viewform"
+        print(message)
+        whatsapp_msg = await send_text_message(phone_number, message)
+        if whatsapp_msg:
+            return {"success": True, "detail":"Message sent"}
+        else:
+            return {"success": False, "detail": "Message not sent"}
+
+
+
 
 async def job():
     print("Running job...")
@@ -72,14 +115,50 @@ async def init_db():
     client = AsyncIOMotorClient(mongo_string)
     await init_beanie(database=client[collection_name], document_models=[Session, User, Event])
 
+
+def init_qdrant():
+    qdrant = QdrantClient(url="http://qdrant:6333")
+    collections = qdrant.get_collections().collections
+    existing = [c.name for c in collections]
+
+    if "document" not in existing:
+        qdrant.create_collection(
+            collection_name="document",
+            vectors_config=VectorParams(
+                size=3072,  # MUST match your embedding model
+                distance=Distance.COSINE
+            )
+        )
+
+    if "chunk" not in existing:
+        qdrant.create_collection(
+            collection_name="chunk",
+            vectors_config=VectorParams(
+                size=3072,
+                distance=Distance.COSINE
+            )
+        )
+    
+
+
 def start_scheduler():
     scheduler.add_job(job, "interval", minutes=10)
+    # Daily countdown
+    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 7, 8, 0))
+    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 8, 8, 0))
+    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 9, 8, 0))
+    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 10, 8, 0))
+    # Survey
+    scheduler.add_job(survey_job, trigger="date", run_date=datetime(2026, 6, 10, 20, 0))
+
+    
     scheduler.start()
 
 @app.on_event("startup")
 async def start_db():
     await init_db()
     start_scheduler()
+    init_qdrant()
 
 @app.get("/health")
 async def root():
@@ -147,7 +226,7 @@ async def send_message(request: RequestSchema):
             firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent = customer_info.values()
             embedded_interest = get_embedding(interest)
             print(firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent)
-            user = User(phone_number = request.phone_number, first_name = firstname, last_name = lastname, email = email, job = job, company = company_name, interest = interest, contact_share = contact_share, marketing_consent= marketing_consent, embedded_interest = embedded_interest)
+            user = User(phone_number = request.phone_number, first_name = firstname, last_name = lastname, email = email, job = job, company = company_name, interest = interest, contact_share = contact_share, marketing_consent= marketing_consent)
             await user.insert()
             logging.info("New User registration process successful.")
 
@@ -188,9 +267,11 @@ async def send_message(request: RequestSchema):
                 for event in events:
                     hour, minute = map(int, event['time'].split(":"))
                     stored_time = time(hour, minute)
-                    now = datetime.now(timezone.utc)
-                    event_date = datetime.combine(now.date(), stored_time)
+                    # fixed date: 10th June 2026
+                    fixed_date = datetime(2026, 6, 10)
+                    event_date = datetime.combine(fixed_date.date(), stored_time)
                     print(event_date)
+
                     event_info.append(Event(name = event['name'], date_time = event_date, room = event['room'], phone_number = request.phone_number))
 
                 await Event.insert_many(event_info)
@@ -200,27 +281,36 @@ async def send_message(request: RequestSchema):
                 result =  f"A reminder has been set for you for the following event(s): {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any questions regarding the event?"
 
         elif request_type == "networking":
-            
-            parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
-            print(parsed)
-            filters = build_beanie_query(parsed)
-    
+            usage = check_event_date()
 
-            if len(filters) == 1:
-                result = "Sorry, I couldn't get any valid criteria from your request. Please try again with more specific information about the attendees you're looking for."
+            if usage is not True : 
+                result = "This functionality is only available on the day of the event."
             else: 
-
-                filters["phone_number"] = {"$ne": request.phone_number}
-                print(filters)
-                users = await User.find(filters).limit(10).to_list()
-                attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
             
-                result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
+                parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
+                print(parsed)
+                filters = build_beanie_query(parsed)
+        
 
-                print(result)
+                if len(filters) == 1:
+                    result = "Sorry, I couldn't get any valid attendee criteria from your request. Please try again with more specific information about the attendees you're looking for."
+                else: 
+
+                    filters["phone_number"] = {"$ne": request.phone_number}
+                    print(filters)
+                    users = await User.find(filters).limit(10).to_list()
+                    attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
+                
+                    result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
+
+                    print(result)
 
         elif request_type == "event_subject":
-            result = await answer_event_question(request.message)
+            usage = check_event_date()
+            if usage is not True : 
+                result = "This functionality is only available on the day of the event."
+            else: 
+                result = await answer_event_question(request.message)
             print(result)
         
         elif request_type == "complimentary":
@@ -234,12 +324,12 @@ async def send_message(request: RequestSchema):
     session.chats.append(message)
     await session.save()
     logging.info("Bot response saved to session.")
-    whatsapp_msg = await send_text_message(request.phone_number, result)
-    if whatsapp_msg:
-        return {"success": True, "detail":"Message sent"}
-    else:
-        return {"success": False, "detail": "Message not sent"}
-    # return {'response' : result }['response']
+    # whatsapp_msg = await send_text_message(request.phone_number, result)
+    # if whatsapp_msg:
+    #     return {"success": True, "detail":"Message sent"}
+    # else:
+    #     return {"success": False, "detail": "Message not sent"}
+    return {'response' : result }['response']
 
 
 @app.post("/message")

@@ -1,24 +1,24 @@
 import os 
+import uuid
 import logging
-import numpy as np
 from uuid import uuid4
 from beanie import Document
 from dotenv import load_dotenv
 from beanie import init_beanie
 from typing import Type, List, Any
-from langchain_chroma import Chroma
-from langchain.schema import Document
+# from langchain.schema import Document
 from pydantic import BaseModel, Field
-from telegram.ext import  ContextTypes
+from qdrant_client import QdrantClient
 from langchain_openai import ChatOpenAI
 from models import RagChunk, RagDocument
 from motor.motor_asyncio import AsyncIOMotorClient
-from datetime import datetime, timezone, timedelta, time
+# from datetime import datetime, timezone, timedelta, time
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from qdrant_client.models import PointStruct, VectorParams, Distance
 from langchain_core.prompts import PromptTemplate, ChatPromptTemplate
 
 load_dotenv()
@@ -30,7 +30,6 @@ os.environ["OPENAI_API_KEY"] =  os.getenv("OPENAI_API_KEY")
 COLLECTION_NAME = 'bluechip'
 MONGO_STRING = os.getenv("MONGO_CONNECTION_STRING")  
 
-PERSIST_DIR = "./chroma_db"
 DOCUMENT_COLLECTION = "document_index"
 CHUNK_COLLECTION = "chunk_index"
 
@@ -48,6 +47,9 @@ LARGE_MODEL = ChatOpenAI(model=LARGE_MODEL_NAME, temperature= temperature)
 TOP_K_DOCS = 1       
 TOP_K_CHUNKS = 3
 
+VECTOR_SIZE = 3_072
+VEC_COLLECTION_NAME = "event_session"
+
 embeddings = OpenAIEmbeddings(model=EMBED_MODEL)
 
 # Better chunking
@@ -63,7 +65,7 @@ class DataExactraction(BaseModel):
         email : str = Field(description = "The user's email")
         job: str = Field(description="The users job")
         company_name: str = Field(description="The user's company name")
-        interest : str = Field(description = "The User's interest"),
+        interest : str = Field(description = "The User's interest")
         marketing_consent: bool = Field(description="Whether the user consents to share their information for marketing purposes or not, the value should be either True or False")
         contact_share: bool = Field(description="Whether the user wants to share their contact information with other attendees or not, the value should be either True or False")
 
@@ -278,9 +280,15 @@ async def init_db():
     await init_beanie(database=CLIENT[COLLECTION_NAME], document_models=[RagDocument, RagChunk])
 
 
+
+qdrant = QdrantClient(url="http://qdrant:6333")
+
+DOCUMENT_COLLECTION = "document"
+CHUNK_COLLECTION = "chunk"
+
+
 def embed_text(text: str) -> List[float]:
     return embeddings.embed_query(text)
-
 
 
 async def check_doc_exists(doc_id: str) -> bool:
@@ -299,44 +307,50 @@ async def check_doc_exists(doc_id: str) -> bool:
     return existing is not None
 
 
-async def ingest_document(
-    text: str,
-    doc_id: str
-):
-    """
-    Ingest into:
-    - document collection
-    - chunk collection
-    """
+
+async def ingest_document(text: str, doc_id: str):
+    point_id = str(uuid.uuid4())
     await init_db()
-    print(f"[INGESTION PROCESS] Checking if document exists for id: {doc_id}")
 
-    doc_exists = await check_doc_exists(doc_id)   
-
-    if doc_exists:
-        print(f"[SKIPPED] {doc_id} already exists.")
+    if await check_doc_exists(doc_id):
+        print("[SKIPPED] already exists")
         return
 
-    print("[INGESTING] The Document does not exist.")
+    print("[INGESTING] document")
 
-
+    # -------------------------
+    # 1. Embed full document
+    # -------------------------
     doc_embedding = embed_text(text)
 
+    # MongoDB (metadata)
     doc = RagDocument(
         document_id=doc_id,
         content=text,
         embedding=doc_embedding
     )
-
     await doc.insert()
 
+    # QDRANT: store document vector
+    qdrant.upsert(
+        collection_name=DOCUMENT_COLLECTION,
+        points=[
+            PointStruct(
+                id=point_id,
+                vector=doc_embedding,
+                payload={"document_id": doc_id, "content": text}
+            )
+        ]
+    )
 
+    # -------------------------
+    # 2. Chunking
+    # -------------------------
     chunks = splitter.split_text(text)
 
-    chunk_docs = []
+    chunk_points = []
 
     for i, chunk in enumerate(chunks):
-
         chunk_embedding = embed_text(chunk)
 
         chunk_doc = RagChunk(
@@ -346,60 +360,53 @@ async def ingest_document(
             embedding=chunk_embedding
         )
 
-        chunk_docs.append(chunk_doc)
+        await chunk_doc.insert()
 
-    if chunk_docs:
-        await RagChunk.insert_many(chunk_docs)
+        chunk_points.append(
+            PointStruct(
+                id= f"{point_id}_{i}",
+                vector=chunk_embedding,
+                payload={
+                    "document_id": doc_id,
+                    "content": chunk,
+                    "chunk_index": i
+                }
+            )
+        )
+
+    # Qdrant bulk insert
+    qdrant.upsert(
+        collection_name=CHUNK_COLLECTION,
+        points=chunk_points
+    )
 
     print(f"[INGESTED] {doc_id} with {len(chunks)} chunks")
 
 
-async def route_to_documents(
-    query: str,
-    k: int = TOP_K_DOCS
-):
+
+async def route_to_documents(query: str, k: int = TOP_K_DOCS):
 
     query_embedding = embed_text(query)
 
-    pipeline = [
-        {
-            "$vectorSearch": {
-                "index": "document_index",
-                "path": "embedding",
-                "queryVector": query_embedding,
-                "numCandidates": 100,
-                "limit": k
-            }
-        },
-        {
-            "$project": {
-                "_id": 0,
-                "document_id": 1,
-                "score": {
-                    "$meta": "vectorSearchScore"
-                }
-            }
-        }
-    ]
+    results = qdrant.query_points(
+        collection_name=DOCUMENT_COLLECTION,
+        query=query_embedding,
+        limit=k
+    )
 
-    results = await RagDocument.aggregate(
-        pipeline
-    ).to_list()
-
-    doc_ids = [
-        doc["document_id"]
-        for doc in results
-    ]
+    doc_ids = list(set([
+                    r.payload.get("document_id")
+                    for r in results.points
+                    if r.payload and "document_id" in r.payload
+                ]))
 
     print(f"[ROUTER] Selected docs: {doc_ids}")
 
     return doc_ids
 
-async def retrieve_chunks(
-    query: str,
-    doc_ids: List[str],
-    k: int = TOP_K_CHUNKS
-):
+
+
+async def retrieve_chunks(query: str, doc_ids: List[str], k: int = TOP_K_CHUNKS):
 
     query_embedding = embed_text(query)
 
@@ -407,37 +414,22 @@ async def retrieve_chunks(
 
     for doc_id in doc_ids:
 
-        pipeline = [
-            {
-                "$vectorSearch": {
-                    "index": "chunk_index",
-                    "path": "embedding",
-                    "queryVector": query_embedding,
-                    "numCandidates": 100,
-                    "limit": k,
-                    "filter": {
-                        "document_id": doc_id
+        results = qdrant.query_points(
+            collection_name=CHUNK_COLLECTION,
+            query=query_embedding,
+            limit=k,
+            query_filter={
+                "must": [
+                    {
+                        "key": "document_id",
+                        "match": {"value": doc_id}
                     }
-                }
-            },
-            {
-                "$project": {
-                    "_id": 0,
-                    "content": 1,
-                    "score": {
-                        "$meta": "vectorSearchScore"
-                    }
-                }
+                ]
             }
-        ]
-
-        results = await RagChunk.aggregate(
-            pipeline
-        ).to_list()
-
-        all_chunks.extend(
-            [r["content"] for r in results]
         )
+        
+
+        all_chunks.extend([r.payload.get("content") for r in results.points])
 
     return all_chunks
 

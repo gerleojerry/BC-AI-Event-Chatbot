@@ -12,7 +12,7 @@ ONBOARDING_PROMPTS = """
     -After you have collected the where they work and what they do there, ask for their professional interests.
     - After asking for their interests, you should ask them if they want their contact information to be shared with other attendees for networking purpose.
     - After asking the question about contact sharing then ask for their email address.
-    - After asking for their email address, you can then ask for consent to share their information for marketing purposes.
+    - After asking for their email address, you can then ask for consent to share their information for other events, networking and news update.
     - After you have collected all the necessary information, you can then ask them to confirm that the information they have given is correct, if they say no, then you can repeat the process again, if they say yes, then you can proceed to the next step.
     - When confirming the information, make sure to present the information you have collected showing the data and the values so that they can know which value belongs to which data in a concise way.
     - After confirming that the information is correct, you can let the know this : You're all set! 🎉 Your registration is complete. What would you like to do next — get personalised session recommendations, find out more about the event, see who else is attending, or set reminders for sessions you don't want to miss.
@@ -80,7 +80,7 @@ RESPONSE_FORMATTER_PROMPT = """
         IMPORTANT NOTE: 
         - You cannot change any part of the text, You can neither add nor remove, you can only format it. 
         - You can convert to a list, add new lines or any format to make it more readable. 
-        - Optimize the formating for whatsapp.
+        - Optimize the formating for whatsapp messaging.
         - You can add if needed.
         - Make sure your reponse does not extra text apart from the one you format. Nothing more nothing less.
 
