@@ -224,7 +224,7 @@ async def send_message(request: RequestSchema):
             customer_info = get_user_info(conversations, prompts.ONBOARDING_DATA_EXTRACTION)
             print("This is the extracted information: ", customer_info)
             firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent = customer_info.values()
-            embedded_interest = get_embedding(interest)
+            # embedded_interest = get_embedding(interest)
             print(firstname, lastname, email, job, company_name, interest, contact_share, marketing_consent)
             user = User(phone_number = request.phone_number, first_name = firstname, last_name = lastname, email = email, job = job, company = company_name, interest = interest, contact_share = contact_share, marketing_consent= marketing_consent)
             await user.insert()
