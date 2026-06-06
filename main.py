@@ -284,7 +284,7 @@ async def send_message(request: RequestSchema):
             usage = check_event_date()
 
             if usage is not True : 
-                result = "This functionality is only available on the day of the event."
+                result = "This functionality is only available on the day of the event.See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
             else: 
             
                 parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
@@ -308,13 +308,16 @@ async def send_message(request: RequestSchema):
         elif request_type == "event_subject":
             usage = check_event_date()
             if usage is not True : 
-                result = "This functionality is only available on the day of the event."
+                result = "This functionality is only available on the day of the event.See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
             else: 
                 result = await answer_event_question(request.message)
             print(result)
         
         elif request_type == "complimentary":
             result = "You're welcome! If you have any more questions or need further assistance, feel free to ask. Enjoy the event! 😊"
+            usage = check_event_date()
+            if usage is not True : 
+                result = "See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
             print(result)
         
         else: 
@@ -329,7 +332,7 @@ async def send_message(request: RequestSchema):
         return {"success": True, "detail":"Message sent"}
     else:
         return {"success": False, "detail": "Message not sent"}
-    return {'response' : result }['response']
+    # return {'response' : result }['response']
 
 
 @app.post("/message")
@@ -364,17 +367,14 @@ async def upload_document(
         data = loader.load()[0].page_content 
         await ingest_document(data, f"{file.filename}")
 
-        # Select all the user that registered for the event. 
-
         # Loop through all the users and send them a message. 
         filters = {'name' : file.filename}
 
+        # Select all the user that registered for the event. 
         users = await Event.find(filters).to_list()
         for user in users: 
             message = f"Knowledge based for the session '{file.filename}' is ready and shared to you because you registered for it. Feel free to ask any question regarding the session and I will be happy to assist you."
             await send_text_message(user.phone_number, message)
-        
-
 
         return {"response": "Document ingested and shared to the interested parties successfully!!!"}
 
