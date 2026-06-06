@@ -406,6 +406,7 @@ EVENT_BOT_PROMPT = """
                     - Make sure you select one sessions of the event from each time frame, so if there are multiple sections of the event happening at the same time, you should only recommend one section of the event to the user based on their interest and the agenda for the event.
 
                     - Users should be able to ask for information about other attendees.
+                    - The 3rd Edition of the Bluechip Data and AI Summit is taking place at Eko Hotels & Suites, Victoria Island, Lagos, Nigeria
 
                     - Use the following information as context to answer the attendees question, Please note that the information in the context is based on the conversation history between you and the user, so you can use that information to answer their questions regarding the event.
                     agenda for the event :
