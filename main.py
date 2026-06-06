@@ -9,14 +9,13 @@ from beanie import init_beanie
 # from typing import Optional, Dict, Any
 from qdrant_client import QdrantClient
 from tempfile import NamedTemporaryFile
-from fastapi import FastAPI, UploadFile, File
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from qdrant_client.models import VectorParams, Distance
 from datetime import datetime, timedelta, time, date
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from models import Session, Message, User, RequestSchema, Event
-from fastapi import FastAPI,Form,  Request, HTTPException, Query
+from fastapi import FastAPI, Form,  Request, HTTPException, Query, UploadFile, File
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
@@ -56,9 +55,9 @@ async def daily_countdown():
         print(message)
         whatsapp_msg = await send_text_message(phone_number, message)
         if whatsapp_msg:
-            return {"success": True, "detail":"Message sent"}
+            print("Message sent")
         else:
-            return {"success": False, "detail": "Message not sent"}
+            print("Message Not sent")
         
 
 def check_event_date(): 
@@ -78,9 +77,9 @@ async def survey_job():
         print(message)
         whatsapp_msg = await send_text_message(phone_number, message)
         if whatsapp_msg:
-            return {"success": True, "detail":"Message sent"}
+            print("Message sent")
         else:
-            return {"success": False, "detail": "Message not sent"}
+            print("Message Not sent")
 
 
 
@@ -109,9 +108,9 @@ async def job():
         print(message)
         whatsapp_msg = await send_text_message(phone_number, message)
         if whatsapp_msg:
-            return {"success": True, "detail":"Message sent"}
+            print("Message sent")
         else:
-            return {"success": False, "detail": "Message not sent"}
+            print("Message Not sent")
         
     
 
@@ -289,17 +288,15 @@ async def send_message(request: RequestSchema):
         elif request_type == "networking":
             usage = check_event_date()
 
-            if usage is not True : 
+            if usage is not True:
                 result = "This functionality is only available on the day of the event.See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
-            else: 
-            
+            else:
                 parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
                 print(parsed)
                 filters = build_beanie_query(parsed)
-        
 
                 if len(filters) == 1:
-                    result = "Sorry, I couldn't get any valid attendee criteria from your request. Please try again with more specific information about the attendees you're looking for."
+                    result = "Sorry, I couldn't identify any valid attendee criteria from your request. Please search by providing attendees full name or company name or job role, and I'll help you find the attendee. eg. can you show me attendees that works at Izifin Technologies"
                 else: 
 
                     filters["phone_number"] = {"$ne": request.phone_number}
@@ -437,8 +434,6 @@ async def whatsapp_callback(request: Request):
                         request_data = RequestSchema(phone_number=msg.get("from"), message = msg.get("text", {}).get("body", ""))
                         result = await send_message(request_data)  # ← your original logic
 
-   
-                   
                     
 
     return {"success": True, 'response': result, "status": "Message received"}
