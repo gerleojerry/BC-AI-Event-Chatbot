@@ -83,6 +83,7 @@ RESPONSE_FORMATTER_PROMPT = """
         - Optimize the formating for whatsapp messaging.
         - You can add if needed.
         - Make sure your reponse does not extra text apart from the one you format. Nothing more nothing less.
+        - When formating text about the event session recommendations, make sure the name, time and room  of the event are together and not splitted. 
 
         Below is the text to format: {message}
 
