@@ -46,7 +46,7 @@ async def daily_countdown():
     for user in users: 
         user_name, phone_number = user.first_name, user.phone_number
        
-        message = f"Hi {user_name}! 🚀 Only {difference} day{'s' if difference != 1 else ''} to go! The BlueChip Data & AI Summit 3rd Edition is almost here! 🎉. Reply to this message to keep receiving countdown reminders."
+        message = f"Hi {user_name}! 🚀 Only {difference} day{'s' if difference != 1 else ''} to go! The BlueChip Data & AI Summit 3rd Edition is almost here! 🎉. Respond with 'Thank you' to this message to keep receiving countdown reminders."
 
         if difference == 0: 
             message = f"Hi {user_name}! 🚀 Today is the day! The BlueChip Data & AI Summit 3rd Edition is here! 🎉 We can't wait to see you there. 🚀 "
