@@ -462,6 +462,7 @@ async def get_all_sessions(page: int = Query(default=1, ge=1)):
                 first_name=session.first_name,
                 last_name=session.last_name,
                 chat_phase=session.chat_phase,
+                created_at=session.created_at,
                 chats=[
                     Message(is_user=m.is_user, message=m.message)
                     for m in session.chats
