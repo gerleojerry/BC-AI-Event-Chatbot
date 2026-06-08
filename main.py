@@ -3,6 +3,7 @@ import logging
 import prompts
 import shutil
 import aiohttp
+from math import ceil
 from pprint import pprint
 from dotenv import load_dotenv
 from beanie import init_beanie
@@ -14,9 +15,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from qdrant_client.models import VectorParams, Distance
 from datetime import datetime, timedelta, time, date
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from models import Session, Message, User, RequestSchema, Event
-from fastapi import FastAPI, Form,  Request, HTTPException, Query, UploadFile, File
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
+from models import Session, Message, User, RequestSchema, Event, PaginatedResponse
+from fastapi import FastAPI, Form,  Request, HTTPException, Query, UploadFile, File, Query
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
 load_dotenv()
@@ -437,6 +438,38 @@ async def whatsapp_callback(request: Request):
                     
 
     return {"success": True, 'response': result, "status": "Message received"}
+
+
+
+
+
+@app.get("/get_users", response_model=PaginatedResponse)
+async def get_all_sessions(page: int = Query(default=1, ge=1)):
+    page_size = 10
+    skip = (page - 1) * page_size
+
+    total = await Session.find_all().count()
+    sessions = await Session.find_all().skip(skip).limit(page_size).to_list()
+
+
+    return PaginatedResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            Session(
+                phone_number=session.phone_number,
+                first_name=session.first_name,
+                last_name=session.last_name,
+                chat_phase=session.chat_phase,
+                chats=[
+                    Message(is_user=m.is_user, message=m.message)
+                    for m in session.chats
+                ],
+            )
+            for session in sessions
+        ],
+    )
 
 
 

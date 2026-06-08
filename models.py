@@ -92,3 +92,10 @@ class RagChunk(BaseDocument):
     class Settings:
         name = "chunks"
         indexes = ["document_id"]
+
+
+class PaginatedResponse(BaseModel):
+    total: int
+    page: int
+    total_pages: int
+    data: List[Session]
