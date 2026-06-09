@@ -287,41 +287,31 @@ async def send_message(request: RequestSchema):
                 result =  f"A reminder has been set for you for the following event(s): {events_data} and you will receive the reminder 10 minutes before the event starts. Do you have any questions regarding the event?"
 
         elif request_type == "networking":
-            usage = check_event_date()
+            
+            parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
+            print(parsed)
+            filters = build_beanie_query(parsed)
 
-            if usage is not True:
-                result = "This functionality is only available on the day of the event.See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
-            else:
-                parsed = get_networking_user_info(request.message, prompts.NETWORK_USER_INFO)
-                print(parsed)
-                filters = build_beanie_query(parsed)
+            if len(filters) == 1:
+                result = "Sorry, I couldn't identify any valid attendee criteria from your request. Please search by providing attendees full name or the company name or job roles, and I'll help you find attendees. eg. show me attendees that works at Izifin Technologies or show me attendees that are data scientists."
+            else: 
 
-                if len(filters) == 1:
-                    result = "Sorry, I couldn't identify any valid attendee criteria from your request. Please search by providing attendees full name or company name or job role, and I'll help you find the attendee. eg. can you show me attendees that works at Izifin Technologies"
-                else: 
-
-                    filters["phone_number"] = {"$ne": request.phone_number}
-                    print(filters)
-                    users = await User.find(filters).limit(10).to_list()
-                    attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
+                filters["phone_number"] = {"$ne": request.phone_number}
+                print(filters)
+                users = await User.find(filters).limit(10).to_list()
+                attendees = [ f"{user.first_name} {user.last_name}, works as a {user.job} at {user.company}.Their contact email is {user.email}" for user in users if user.phone_number != request.phone_number] 
                 
-                    result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
+                result = "Sorry, There aren't any attendee matching your criteria." if len(attendees) == 0 else "Here are some attendee(s) that match your criteria: " + "\n".join(attendees)
 
-                    print(result)
+                print(result)
 
         elif request_type == "event_subject":
-            usage = check_event_date()
-            if usage is not True : 
-                result = "This functionality is only available on the day of the event.See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
-            else: 
-                result = await answer_event_question(request.message)
+            
+            result = await answer_event_question(request.message)
             print(result)
         
         elif request_type == "complimentary":
             result = "You're welcome! If you have any more questions or need further assistance, feel free to ask. Enjoy the event! 😊"
-            usage = check_event_date()
-            if usage is not True : 
-                result = "See you back here on Wednesday! In the meantime, feel free to reach out if you have any questions."
             print(result)
         
         else: 

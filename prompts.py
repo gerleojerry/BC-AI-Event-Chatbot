@@ -118,7 +118,7 @@ AGENDA  = """
                         "start_time": "10:10 AM",
                         "end_time": "10:35 AM",
                         "duration": "25 minutes",
-                        "session": "Director General NITDA",
+                        "session": "Keynote",
                         "speakers": [
                             "Kashifu Inuwa Abdullahi"
                         ]
@@ -127,16 +127,17 @@ AGENDA  = """
                         "start_time": "10:35 AM",
                         "end_time": "11:05 AM",
                         "duration": "30 minutes",
-                        "session": "How African Banks Win the AI Race Without Losing Trust",
+                        "session": "Fireside chat: VC.AI: Pipelines, Profits and a Bubble.",
                         "speakers": [
-                            "Olumide Soyombo"
+                            "Olumide Soyombo", 
+                            "Kola Aina"
                         ]
                         },
                         {
                         "start_time": "11:05 AM",
                         "end_time": "11:35 AM",
                         "duration": "30 minutes",
-                        "session": "International Keynote",
+                        "session": "Keynote",
                         "speakers": [
                             "Rosanne Werner - CEO Xcelerate10"
                         ]
@@ -156,6 +157,7 @@ AGENDA  = """
                         "duration": "60 minutes",
                         "session": "Panel Session 1 - AI in Banking & Fintech: From Hype to Real Execution",
                         "speakers": [
+                            "Toba Adedurin - Moderator",
                             "Victor Adewusi (Accesa)",
                             "Bartholomew Okonkwo (CIO Fidelity)",
                             "Racheal Adeshina (FBN)",
@@ -169,7 +171,7 @@ AGENDA  = """
                         "duration": "20 minutes",
                         "session": "Hackathon Announcements - Prize Presentation",
                         "speakers": [
-                            "Azeeze Busari",
+                            "Azeez Busari",
                             "DSN Team"
                         ]
                         },
@@ -180,50 +182,54 @@ AGENDA  = """
                         "session": "Tea Break",
                         "speakers": []
                         },
+
                         {
                         "start_time": "1:50 PM",
                         "end_time": "2:35 PM",
                         "duration": "45 minutes",
-                        "room": "Main Hall",
-                        "session": "AI in Industry Regulation",
-                        "speakers": [
-                            "Osagie Imasuen (NUPR)",
-                            "Abdullahi Adamu (NERC)",
-                            "Oyeleke Abayomi (CBN)",
-                            "Kunle Aina (Moderator - BCT)"
-                        ]
-                        },
-                        {
-                        "start_time": "1:50 PM",
-                        "end_time": "2:35 PM",
-                        "duration": "45 minutes",
-                        "room": "Amber Breakout Room",
+                        "room": "Main Stage",
                         "session": "Building the Rails for Intelligence",
                         "speakers": [
-                            "Roger Shutte (MTN)",
-                            "Olumbe Akinkugbe (Galaxy Backbone)",
-                            "Vremudia Oghene-Ruemu (Fringe)",
                             "Alex Okoh (Bluechip) - Moderator"
+                            "Vremudia Oghene-Ruemu (Fringe)",
+                            "Olumbe Akinkugbe (Galaxy Backbone)",
+                            "Boluwaji Faniyi", 
+                            "Lashan Sivaganeshan"
+                        ]
+                        },
+
+                        {
+                        "start_time": "1:50 PM",
+                        "end_time": "2:35 PM",
+                        "duration": "45 minutes",
+                        "room": "Amber Room",
+                        "session": "AI in Industry Regulation",
+                        "speakers": [
+                            "Damilare Ogunleye - Moderator",
+                            "Osagie Imasuen (NUPR)",
+                            "Abdullahi Adamu (NERC)",
+                            "Toyosi Egunjobi",
+                            "Dr Abduljelil Yusuf"
                         ]
                         },
                         {
                         "start_time": "1:50 PM",
                         "end_time": "2:35 PM",
                         "duration": "45 minutes",
-                        "room": "Green Breakout Room",
+                        "room": "Green Room",
                         "session": "AI is Here. Is Your Workforce Ready?",
                         "speakers": [
+                            "Fola Olatunji - Moderator",
                             "Isioma Utomi - Catalyst Solutions",
-                            "Piero Trivellato - JADA",
+                            "Yomi Akinyemi",
                             "Tope Ajao - Primo",
-                            "Fola Olatunji - Moderator"
                         ]
                         },
                         {
                         "start_time": "1:50 PM",
                         "end_time": "2:35 PM",
                         "duration": "45 minutes",
-                        "room": "Purple Breakout Room",
+                        "room": "Purple Room",
                         "session": "Agentic AI: Implementing & Delivering Value",
                         "speakers": [
                             "Temi Kolawale"
@@ -236,6 +242,7 @@ AGENDA  = """
                         "room": "Executive Track",
                         "session": "AI Playbook for Enterprises (Kickstart and Scale)",
                         "speakers": [
+                            "Cedric Tsega - Host",
                             "Rosanne Werner",
                             "Abel Abbot"
                         ]
@@ -244,18 +251,17 @@ AGENDA  = """
                         "start_time": "2:35 PM",
                         "end_time": "2:50 PM",
                         "duration": "15 minutes",
-                        "room": "Main Hall",
+                        "room": "Main Stage",
                         "session": "Lightning Talk by IntentHQ",
                         "speakers": [
                             "Jonathan Woolf",
-                            "Colin White"
                         ]
                         },
                         {
                         "start_time": "2:50 PM",
                         "end_time": "3:05 PM",
                         "duration": "15 minutes",
-                        "room": "Main Hall",
+                        "room": "Main Stage",
                         "session": "Lightning Talk by Huawei",
                         "speakers": []
                         },
@@ -263,15 +269,25 @@ AGENDA  = """
                         "start_time": "3:05 PM",
                         "end_time": "3:20 PM",
                         "duration": "15 minutes",
-                        "room": "Main Hall",
+                        "room": "Main Stage",
                         "session": "Lightning Talk - Informatica",
+                        "speakers": [
+                            "Yasser Salah"
+                        ]
+                        },
+                         {
+                        "start_time": "3:20 PM",
+                        "end_time": "3:35 PM",
+                        "duration": "15 minutes",
+                        "room": "Main Stage",
+                        "session": "Lightning Talk - Redington",
                         "speakers": []
                         },
                         {
                         "start_time": "2:35 PM",
-                        "end_time": "3:20 PM",
-                        "duration": "45 minutes",
-                        "room": "Amber Breakout Room",
+                        "end_time": "3:35 PM",
+                        "duration": "60 minutes",
+                        "room": "Amber Room",
                         "session": "Workshop - Hands-On with AWS GenAI: Building Your First Intelligent Application on Amazon Bedrock",
                         "speakers": [
                             "AWS"
@@ -279,9 +295,9 @@ AGENDA  = """
                         },
                         {
                         "start_time": "2:35 PM",
-                        "end_time": "3:20 PM",
-                        "duration": "45 minutes",
-                        "room": "Green Breakout Room",
+                        "end_time": "3:35 PM",
+                        "duration": "60 minutes",
+                        "room": "Green Room",
                         "session": "The Intelligent Enterprise: Data, Cloud & Ops",
                         "speakers": [
                             "Oracle"
@@ -289,40 +305,34 @@ AGENDA  = """
                         },
                         {
                         "start_time": "2:35 PM",
-                        "end_time": "3:20 PM",
-                        "duration": "45 minutes",
-                        "room": "Purple Breakout Room & Executive Track",
+                        "end_time": "3:35 PM",
+                        "duration": "60 minutes",
+                        "room": "Purple Room",
                         "session": "Master class - Idea to Product",
                         "speakers": [
                             "Saheed Azeez"
                         ]
                         },
-                        {
-                        "start_time": "3:20 PM",
-                        "end_time": "3:35 PM",
-                        "duration": "15 minutes",
-                        "room": "All the rooms",
-                        "session": "Redington",
-                        "speakers": []
-                        },
+                       
                         {
                         "start_time": "3:35 PM",
-                        "end_time": "4:05 PM",
-                        "duration": "30 minutes",
-                        "room": "Main Hall",
+                        "end_time": "4:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Main Stage",
                         "session": "SheCodes the Algorithm: The Power of Women Rewriting Data & AI",
                         "speakers": [
+                            "Olamide Odekunle - Moderator"
                             "Margaret Olele (CEO American Business Council)",
                             "Uzo Nwani",
                             "Fifehan Osikanlu",
-                            "Olamide Miriam - Moderator"
+                            "Victoria Abiola Ajayi"
                         ]
                         },
                         {
                         "start_time": "3:35 PM",
-                        "end_time": "4:05 PM",
-                        "duration": "30 minutes",
-                        "room": "Amber Breakout Room",
+                        "end_time": "4:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Amber Room",
                         "session": "Deploying AI-Ready Infrastructure in your Enterprise",
                         "speakers": [
                             "Dell"
@@ -330,9 +340,9 @@ AGENDA  = """
                         },
                         {
                         "start_time": "3:35 PM",
-                        "end_time": "4:05 PM",
-                        "duration": "30 minutes",
-                        "room": "Green Breakout Room",
+                        "end_time": "4:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Green Room",
                         "session": "African Networks & AI",
                         "speakers": [
                             "Huawei"
@@ -340,22 +350,25 @@ AGENDA  = """
                         },
                         {
                         "start_time": "3:35 PM",
-                        "end_time": "4:05 PM",
-                        "duration": "30 minutes",
-                        "room": "Purple Breakout Room & Executive Track",
-                        "session": "Scaling AI in Energy",
+                        "end_time": "4:20 PM",
+                        "duration": "45 minutes",
+                        "room": "Purple Room",
+                        "session": "AI in Energy: From operations to Optimization",
                         "speakers": [
+                            "Olawale Olasoju (BCT) - Moderator",
                             "Excel Ukpohor (NLNG)",
                             "Dolapo Ajayi (Dangote)",
-                            "Olawale Olasoju - BCT (Moderator)"
+                            "Rotimi Thomas"
                         ]
                         },
                         {
-                        "start_time": "4:05 PM",
-                        "end_time": "4:20 PM",
+                        "start_time": "4:20 PM",
+                        "end_time": "4:35 PM",
                         "duration": "15 minutes",
                         "session": "Closing Remarks",
-                        "speakers": []
+                        "speakers": [
+                            "Gbemisola Hassan"
+                        ]
                         }
                     ]
                     }
@@ -373,6 +386,8 @@ EVENT_BOT_PROMPT = """
                 -If you don't have enough information to answer the user question, you can let them know that you don't have enough information to answer their question and ask them to contact the support team for more information.
 
                 - If the user is asking questions that are unrelated to the event, you can let them know that you are only here to assist with information about the event.
+                - You are to strictly respond to questions that are only related to the event, and let them you can't provide answers to questions that are not related to the event. 
+                - In a situation where you are asked about the Agenda of the event, Please list ALL the sessions to the user.
 
                 - A big part of your job is recommending sections of the event that align with the attendee's interest, you must recommend one section from each timeframe and you should select the section that is the most alignedm. You must pick one.
 
@@ -394,7 +409,9 @@ EVENT_BOT_PROMPT = """
                 IMPORTANT NOTE:
                     - When a person requests to want to set a reminder for a session without passing through the recommendation process, then you have you get the room and the start time of the session from the agenda below.
                     - Always make sure to be polite and professional in your response, and make sure to address the user with their first name.
-                    - When a user asks questions about all the speaker, you have to list all the speakers in the event.
+                    -In a situation where you are asked for the Agenda of the event, Please list ALL the sessions in the agenda to the user even if it is more than two sentences, all the session from Arrival to closing remarks and in all the rooms.
+
+                    - When a user asks questions about the speakers in the event, you have to list all the speakers in the event.
                     - When a user ask's the about the topic a particlar speaker on, Make sure you pick your answer from agenda of the event, select it from the session keys in the agenda dictionary.
 
                     - All responses must be short and sweet as possible, no response should be more than 2 sentences, and make sure to be polite and professional in your response.
@@ -407,6 +424,26 @@ EVENT_BOT_PROMPT = """
 
                     - Users should be able to ask for information about other attendees.
                     - The 3rd Edition of the Bluechip Data and AI Summit is taking place at Eko Hotels & Suites, Victoria Island, Lagos, Nigeria
+
+                    - Below is the social media handle for Bluechip and the live sessions of the event. Please using common sense and reason and share this information with the attendees when needed eg. in cases when the users cannot make it to the event physically:
+                        https://www.linkedin.com/company/bluechip-technologies-limited
+                        https://www.instagram.com/bluechiptechng
+                        https://twitter.com/bluechiptechng
+                        https://www.youtube.com/@bluechiptechnologieslimited
+                        https://www.facebook.com/BluechiptechNG
+                        http://tiktok.com/@bluechiptechnologies
+
+                        Live stream Links
+                        https://www.youtube.com/live/YH7JDsQqyRw?si=AYxVQWnyessq89hV - Main Hall
+                        https://www.youtube.com/live/GtPbmv93-Ec?si=keZ-vjeN28b-08so - AI in Industry Regulation
+                        https://www.youtube.com/live/dlQrwU6GrJA?si=Zao-sltI2rEL0ifV - Agentic AI: Implementing and Delivering Value
+                        https://www.youtube.com/live/zVNXLR0o3Us?si=NcWuDq2JxmNXfTN2 - AI is Here. Is Your Workforce Rewady?
+                        https://www.youtube.com/live/0LzrKU8mzlk?si=dNwojwUQ_53Pb7Dx - From Idea to Product
+                        https://www.youtube.com/live/7xaou0E7inA?si=OzPql0dq9x5l7Fnj - Hands-On with AWS GenAI
+                        https://www.youtube.com/live/b5IofiDw1qY?si=-04v_iKVxgolrQsd - The Intelligent Enterprise; Data, Cloud, & Ops
+                        https://www.youtube.com/live/L-_AVQqwndg?si=sY8PYSDrC1lrzwqk - Deploying AI-Ready Infrastructure in your Enterprise
+                        https://www.youtube.com/live/RA-mhwt47Yo?si=4oelb-atF_-Es6Dh - AI in Energy: From Operations to Optimization
+                        https://www.youtube.com/live/wZH_GnZP_sE?si=TpnzIKYfnedxoOAz - African Networks and AI
 
                     - Use the following information as context to answer the attendees question, Please note that the information in the context is based on the conversation history between you and the user, so you can use that information to answer their questions regarding the event.
                     agenda for the event :
