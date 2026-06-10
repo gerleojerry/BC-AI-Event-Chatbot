@@ -156,7 +156,7 @@ def start_scheduler():
     scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 9, 7, 0))
     scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 10, 7, 0))
     # Survey
-    scheduler.add_job(survey_job, trigger="date", run_date=datetime(2026, 6, 10, 20, 0))
+    # scheduler.add_job(survey_job, trigger="date", run_date=datetime(2026, 6, 10, 20, 0))
 
     
     scheduler.start()
