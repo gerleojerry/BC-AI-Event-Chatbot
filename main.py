@@ -87,7 +87,8 @@ async def survey_job():
 
 async def job():
     print("Running job...")
-    now = datetime.now(timezone.utc)
+    WAT = timezone(timedelta(hours=1))
+    now = datetime.now(WAT)
     # now = datetime.now()
     ten_minutes_later = now + timedelta(minutes=9)
     print(f"This the current time: {now}")
@@ -435,6 +436,35 @@ async def whatsapp_callback(request: Request):
 
 @app.get("/get_users", response_model=PaginatedResponse)
 async def get_all_sessions(page: int = Query(default=1, ge=1)):
+    page_size = 10
+    skip = (page - 1) * page_size
+
+    total = await Session.find_all().count()
+    sessions = await Session.find_all().skip(skip).limit(page_size).to_list()
+
+
+    return PaginatedResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            Session(
+                phone_number=session.phone_number,
+                first_name=session.first_name,
+                last_name=session.last_name,
+                chat_phase=session.chat_phase,
+                created_at=session.created_at,
+                chats=[
+                    Message(is_user=m.is_user, message=m.message)
+                    for m in session.chats
+                ],
+            )
+            for session in sessions
+        ],
+    )
+
+@app.get("/get_user_info", response_model=PaginatedResponse)
+async def get_all_users(page: int = Query(default=1, ge=1)):
     page_size = 10
     skip = (page - 1) * page_size
 

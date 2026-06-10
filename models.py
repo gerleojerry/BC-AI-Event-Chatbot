@@ -99,3 +99,10 @@ class PaginatedResponse(BaseModel):
     page: int
     total_pages: int
     data: List[Session]
+
+
+class PaginatedUserResponse(BaseModel):
+    total: int
+    page: int
+    total_pages: int
+    data: List[Session]
