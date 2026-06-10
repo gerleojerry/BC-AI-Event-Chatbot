@@ -463,34 +463,34 @@ async def get_all_sessions(page: int = Query(default=1, ge=1)):
         ],
     )
 
-@app.get("/get_user_info", response_model=PaginatedResponse)
-async def get_all_users(page: int = Query(default=1, ge=1)):
-    page_size = 10
-    skip = (page - 1) * page_size
+# @app.get("/get_user_info", response_model=PaginatedResponse)
+# async def get_all_users(page: int = Query(default=1, ge=1)):
+#     page_size = 10
+#     skip = (page - 1) * page_size
 
-    total = await Session.find_all().count()
-    sessions = await Session.find_all().skip(skip).limit(page_size).to_list()
+#     total = await Session.find_all().count()
+#     sessions = await Session.find_all().skip(skip).limit(page_size).to_list()
 
 
-    return PaginatedResponse(
-        total=total,
-        page=page,
-        total_pages=ceil(total / page_size) if total > 0 else 1,
-        data=[
-            Session(
-                phone_number=session.phone_number,
-                first_name=session.first_name,
-                last_name=session.last_name,
-                chat_phase=session.chat_phase,
-                created_at=session.created_at,
-                chats=[
-                    Message(is_user=m.is_user, message=m.message)
-                    for m in session.chats
-                ],
-            )
-            for session in sessions
-        ],
-    )
+#     return PaginatedResponse(
+#         total=total,
+#         page=page,
+    #     total_pages=ceil(total / page_size) if total > 0 else 1,
+    #     data=[
+    #         Session(
+    #             phone_number=session.phone_number,
+    #             first_name=session.first_name,
+    #             last_name=session.last_name,
+    #             chat_phase=session.chat_phase,
+    #             created_at=session.created_at,
+    #             chats=[
+    #                 Message(is_user=m.is_user, message=m.message)
+    #                 for m in session.chats
+    #             ],
+    #         )
+    #         for session in sessions
+    #     ],
+    # )
 
 
 
