@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 from motor.motor_asyncio import AsyncIOMotorClient
 from fastapi.middleware.cors import CORSMiddleware
 from qdrant_client.models import VectorParams, Distance
-from datetime import datetime, timedelta, time, date
+from datetime import datetime, timedelta, time, date, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
 from models import Session, Message, User, RequestSchema, Event, PaginatedResponse
@@ -271,11 +271,11 @@ async def send_message(request: RequestSchema):
             else:
                 event_info = []
                 for event in events:
+                    
                     hour, minute = map(int, event['time'].split(":"))
                     stored_time = time(hour, minute)
-                    # fixed date: 10th June 2026
-                    fixed_date = datetime(2026, 6, 10)
-                    event_date = datetime.combine(fixed_date.date(), stored_time)
+                    now = datetime.now(timezone.utc)
+                    event_date = datetime.combine(now.date(), stored_time)
                     print(event_date)
 
                     event_info.append(Event(name = event['name'], date_time = event_date, room = event['room'], phone_number = request.phone_number))

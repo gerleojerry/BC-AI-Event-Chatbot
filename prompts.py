@@ -425,7 +425,7 @@ EVENT_BOT_PROMPT = """
                     - Users should be able to ask for information about other attendees.
                     - The 3rd Edition of the Bluechip Data and AI Summit is taking place at Eko Hotels & Suites, Victoria Island, Lagos, Nigeria
 
-                    - Below is the social media handle for Bluechip and the live sessions of the event. Please using common sense and reason and share this information with the attendees when needed eg. in cases when the users cannot make it to the event physically:
+                    - Below is the social media handle for Bluechip and the live sessions or live stream of the event. When some asks for them, List all of them. Please use common sense and reason and share this information with the attendees when needed eg. in cases when the users cannot make it to the event physically:
                         https://www.linkedin.com/company/bluechip-technologies-limited
                         https://www.instagram.com/bluechiptechng
                         https://twitter.com/bluechiptechng
