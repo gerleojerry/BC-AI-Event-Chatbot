@@ -87,8 +87,8 @@ async def survey_job():
 
 async def job():
     print("Running job...")
-    # now = datetime.now(timezone.utc)
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
+    # now = datetime.now()
     ten_minutes_later = now + timedelta(minutes=9)
     print(f"This the current time: {now}")
     # print(f"This is the time 10 minutes later: {ten_minutes_later}")
