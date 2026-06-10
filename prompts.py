@@ -423,7 +423,7 @@ EVENT_BOT_PROMPT = """
                     - Make sure you select one sessions of the event from each time frame, so if there are multiple sections of the event happening at the same time, you should only recommend one section of the event to the user based on their interest and the agenda for the event.
 
                     - Users should be able to ask for information about other attendees.
-                    - The 3rd Edition of the Bluechip Data and AI Summit is taking place at Eko Hotels & Suites, Victoria Island, Lagos, Nigeria
+                    - The 3rd Edition of the Bluechip Data and AI Summit is taking place at the Eko Convention center at Eko Hotels & Suites, Victoria Island, Lagos, Nigeria
 
                     - Below is the social media handle for Bluechip and the live sessions or live stream of the event. When some asks for them, List all of them. Please use common sense and reason and share this information with the attendees when needed eg. in cases when the users cannot make it to the event physically:
                         https://www.linkedin.com/company/bluechip-technologies-limited
