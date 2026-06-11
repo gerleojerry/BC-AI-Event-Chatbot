@@ -106,3 +106,9 @@ class PaginatedUserResponse(BaseModel):
     page: int
     total_pages: int
     data: List[User]
+
+class PaginatedEventResponse(BaseModel):
+    total: int
+    page: int
+    total_pages: int
+    data: List[Event]

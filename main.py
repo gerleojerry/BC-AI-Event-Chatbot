@@ -16,7 +16,7 @@ from qdrant_client.models import VectorParams, Distance
 from datetime import datetime, timedelta, time, date, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
-from models import Session, Message, User, RequestSchema, Event, PaginatedResponse, PaginatedUserResponse
+from models import Session, Message, User, RequestSchema, Event, PaginatedResponse, PaginatedUserResponse, PaginatedEventResponse
 from fastapi import FastAPI, Form,  Request, HTTPException, Query, UploadFile, File, Query
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
@@ -561,6 +561,29 @@ async def get_all_users_info(page: int = Query(default=1, ge=1)):
                 contact_share = user.contact_share
             )
             for user in users
+        ],
+    )
+
+@app.get("/get_all_event", response_model=PaginatedEventResponse)
+async def get_all_event(page: int = Query(default=1, ge=1)):
+    
+    total = await Event.find_all().count()
+    page_size = total
+    events = await Event.find_all().to_list()
+
+
+    return PaginatedEventResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            Event(
+                name= event.name,
+                date_time= event.date_time,
+                room= event.room,
+                phone_number= event.phone_number
+            )
+            for event in events
         ],
     )
 
