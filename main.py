@@ -178,8 +178,9 @@ def start_scheduler():
 @app.on_event("startup")
 async def start_db():
     await init_db()
-    start_scheduler()
+    # start_scheduler()
     init_qdrant()
+    await job()
 
 @app.get("/health")
 async def root():
