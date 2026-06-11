@@ -85,35 +85,48 @@ async def survey_job():
 
 
 
-async def job():
-    print("Running job...")
-    WAT = timezone(timedelta(hours=1))
-    now = datetime.now(WAT)
-    # now = datetime.now()
-    ten_minutes_later = now + timedelta(minutes=9)
-    print(f"This the current time: {now}")
-    # print(f"This is the time 10 minutes later: {ten_minutes_later}")
-    docs = await Event.find(
-    {
-        "date_time": {
-            "$gte": now,
-            "$lte": ten_minutes_later
-        }
-    }
-        ).to_list()
+# async def job():
+#     print("Running job...")
+#     WAT = timezone(timedelta(hours=1))
+#     now = datetime.now(WAT)
+#     # now = datetime.now()
+#     ten_minutes_later = now + timedelta(minutes=9)
+#     print(f"This the current time: {now}")
+#     # print(f"This is the time 10 minutes later: {ten_minutes_later}")
+#     docs = await Event.find(
+#     {
+#         "date_time": {
+#             "$gte": now,
+#             "$lte": ten_minutes_later
+#         }
+#     }
+#         ).to_list()
     
-    print(f"This is the upcoming events in the next 10 minutes: {len(docs)}")
-    for doc in docs: 
-        event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
-        message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
-        # request_data = RequestSchema(phone_number=phone_number, message=message)
+#     print(f"This is the upcoming events in the next 10 minutes: {len(docs)}")
+    # for doc in docs: 
+    #     event_name, event_time, event_room, phone_number = doc.name, doc.date_time, doc.room, doc.phone_number
+    #     message = f"Reminder: You have the event '{event_name}' at {event_time.strftime('%H:%M')} in room {event_room} starting in less than 10 minutes. Don't miss it!"
+    #     # request_data = RequestSchema(phone_number=phone_number, message=message)
+    #     print(message)
+    #     whatsapp_msg = await send_text_message(phone_number, message)
+    #     if whatsapp_msg:
+    #         print("Message sent")
+    #     else:
+    #         print("Message Not sent")
+        
+async def job():
+    print("Survey job has begun!!")
+    users = await User.find_all().to_list()
+
+    for user in users: 
+        user_name, phone_number = user.first_name, user.phone_number
+        message = f"Hi {user_name}, the transcript from the program is ready! Feel free to ask any questions about what your favourite speaker said or your favourite session!"
         print(message)
         whatsapp_msg = await send_text_message(phone_number, message)
         if whatsapp_msg:
             print("Message sent")
         else:
             print("Message Not sent")
-        
     
 
 async def init_db():
@@ -149,10 +162,10 @@ def init_qdrant():
 
 
 def start_scheduler():
-    scheduler.add_job(job, "interval", minutes=10)
-    
+    # scheduler.add_job(job, "interval", minutes=10)
+
     # Daily countdown
-    # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 7, 7, 0))
+    scheduler.add_job(job, trigger="date",run_date=datetime(2026, 6, 11, 4, 35))
     # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 8, 7, 0))
     # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 9, 7, 0))
     # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 10, 7, 0))
