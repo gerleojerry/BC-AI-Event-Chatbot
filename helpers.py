@@ -430,6 +430,7 @@ async def retrieve_chunks(query: str, doc_ids: List[str], k: int = TOP_K_CHUNKS)
         
 
         all_chunks.extend([r.payload.get("content") for r in results.points])
+        print(all_chunks)
 
     return all_chunks
 
