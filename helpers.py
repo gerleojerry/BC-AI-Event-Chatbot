@@ -443,12 +443,7 @@ def generate_answer(
     context = "\n\n".join(context_chunks)
 
     prompt = f"""
-    You are a precise assistant.
-
-    Answer ONLY using the provided context.
-
-    If the answer is not in the context,
-    say "Please can you add more context to the question.".
+    Answer using the provided context.
 
     Question:
     {query}
@@ -459,7 +454,7 @@ def generate_answer(
     Answer:
     """
 
-    response = MODEL.invoke(prompt)
+    response = LARGE_MODEL.invoke(prompt)
 
     return response.content.strip()
 
