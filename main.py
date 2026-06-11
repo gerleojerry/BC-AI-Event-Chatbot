@@ -150,11 +150,12 @@ def init_qdrant():
 
 def start_scheduler():
     scheduler.add_job(job, "interval", minutes=10)
+    
     # Daily countdown
-    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 7, 7, 0))
-    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 8, 7, 0))
-    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 9, 7, 0))
-    scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 10, 7, 0))
+    # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 7, 7, 0))
+    # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 8, 7, 0))
+    # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 9, 7, 0))
+    # scheduler.add_job(daily_countdown, trigger="date",run_date=datetime(2026, 6, 10, 7, 0))
     # Survey
     # scheduler.add_job(survey_job, trigger="date", run_date=datetime(2026, 6, 10, 20, 0))
 

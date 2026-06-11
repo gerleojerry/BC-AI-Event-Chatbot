@@ -364,7 +364,7 @@ async def ingest_document(text: str, doc_id: str):
 
         chunk_points.append(
             PointStruct(
-                id= f"{point_id}_{i}",
+                id= str(uuid.uuid5(uuid.NAMESPACE_DNS, f"{point_id}_{i}")),
                 vector=chunk_embedding,
                 payload={
                     "document_id": doc_id,
