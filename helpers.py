@@ -44,8 +44,8 @@ MODEL = ChatOpenAI(model=MODEL_NAME, temperature= temperature)
 NANO_MODEL = ChatOpenAI(model=NANO_MODEL_NAME, temperature= temperature)
 LARGE_MODEL = ChatOpenAI(model=LARGE_MODEL_NAME, temperature= temperature)
 
-TOP_K_DOCS = 1       
-TOP_K_CHUNKS = 3
+TOP_K_DOCS = 10      
+TOP_K_CHUNKS = 50
 
 VECTOR_SIZE = 3_072
 VEC_COLLECTION_NAME = "event_session"
@@ -54,8 +54,8 @@ embeddings = OpenAIEmbeddings(model=EMBED_MODEL)
 
 # Better chunking
 splitter = RecursiveCharacterTextSplitter(
-    chunk_size=1000,
-    chunk_overlap=200
+    chunk_size=3000,
+    chunk_overlap=500
 )
 
 class DataExactraction(BaseModel):
