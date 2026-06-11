@@ -273,7 +273,7 @@ async def send_message(request: RequestSchema):
                 event_info = []
                 for event in events:
                     
-                    hour, minute = map(int, event['time'].split(":"))
+                    hour, minute = map(int, event['time'][:5].split(":"))
                     stored_time = time(hour, minute)
                     now = datetime.now(timezone.utc)
                     event_date = datetime.combine(now.date(), stored_time)
