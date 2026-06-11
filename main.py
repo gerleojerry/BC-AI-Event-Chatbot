@@ -16,7 +16,7 @@ from qdrant_client.models import VectorParams, Distance
 from datetime import datetime, timedelta, time, date, timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from langchain_community.document_loaders import UnstructuredWordDocumentLoader
-from models import Session, Message, User, RequestSchema, Event, PaginatedResponse
+from models import Session, Message, User, RequestSchema, Event, PaginatedResponse, PaginatedUserResponse
 from fastapi import FastAPI, Form,  Request, HTTPException, Query, UploadFile, File, Query
 from helpers import get_conversations, get_response, get_user_info, get_event_info, get_stage, get_embedding, get_networking_user_info, build_beanie_query, ingest_document, answer_event_question, text_formater
 
@@ -180,7 +180,7 @@ async def start_db():
     await init_db()
     # start_scheduler()
     init_qdrant()
-    await job()
+    # await job()
 
 @app.get("/health")
 async def root():
@@ -477,35 +477,92 @@ async def get_all_sessions(page: int = Query(default=1, ge=1)):
             for session in sessions
         ],
     )
+@app.get("/get_all_sessions", response_model=PaginatedResponse)
+async def get_every_session(page: int = Query(default=1, ge=1)):
+    # skip = (page - 1) * page_size
 
-# @app.get("/get_user_info", response_model=PaginatedResponse)
-# async def get_all_users(page: int = Query(default=1, ge=1)):
-#     page_size = 10
-#     skip = (page - 1) * page_size
-
-#     total = await Session.find_all().count()
-#     sessions = await Session.find_all().skip(skip).limit(page_size).to_list()
+    total = await Session.find_all().count()
+    page_size = total
+    sessions = await Session.find_all().to_list()
 
 
-#     return PaginatedResponse(
-#         total=total,
-#         page=page,
-    #     total_pages=ceil(total / page_size) if total > 0 else 1,
-    #     data=[
-    #         Session(
-    #             phone_number=session.phone_number,
-    #             first_name=session.first_name,
-    #             last_name=session.last_name,
-    #             chat_phase=session.chat_phase,
-    #             created_at=session.created_at,
-    #             chats=[
-    #                 Message(is_user=m.is_user, message=m.message)
-    #                 for m in session.chats
-    #             ],
-    #         )
-    #         for session in sessions
-    #     ],
-    # )
+    return PaginatedResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            Session(
+                phone_number=session.phone_number,
+                first_name=session.first_name,
+                last_name=session.last_name,
+                chat_phase=session.chat_phase,
+                created_at=session.created_at,
+                chats=[
+                    Message(is_user=m.is_user, message=m.message)
+                    for m in session.chats
+                ],
+            )
+            for session in sessions
+        ],
+    )
+
+@app.get("/get_user_info", response_model=PaginatedUserResponse)
+async def get_all_users(page: int = Query(default=1, ge=1)):
+    page_size = 10
+    skip = (page - 1) * page_size
+
+    total = await User.find_all().count()
+    users = await User.find_all().skip(skip).limit(page_size).to_list()
+
+
+    return PaginatedUserResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            User(
+                phone_number=user.phone_number,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                interest=user.interest,
+                company=user.company,
+                email=user.email,
+                job=user.job,
+                marketing_consent = user.marketing_consent, 
+                contact_share = user.contact_share
+                
+            )
+            for user in users
+        ],
+    )
+
+@app.get("/get_all_user_info", response_model=PaginatedUserResponse)
+async def get_all_users_info(page: int = Query(default=1, ge=1)):
+    
+    total = await User.find_all().count()
+    page_size = total
+    users = await User.find_all().to_list()
+
+
+    return PaginatedUserResponse(
+        total=total,
+        page=page,
+        total_pages=ceil(total / page_size) if total > 0 else 1,
+        data=[
+            User(
+                phone_number=user.phone_number,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                interest=user.interest,
+                company=user.company,
+                email=user.email,
+                job=user.job,
+                marketing_consent = user.marketing_consent,
+                contact_share = user.contact_share
+            )
+            for user in users
+        ],
+    )
 
 
 

@@ -100,7 +100,7 @@ def get_conversations(session):
         else: 
             prompt = prompt + f"Bot: {con.message} "
 
-    logging.info(f"Prompt generated!!")
+    logging.info("Prompt generated!!")
 
     return prompt
 

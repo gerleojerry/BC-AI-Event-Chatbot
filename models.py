@@ -105,4 +105,4 @@ class PaginatedUserResponse(BaseModel):
     total: int
     page: int
     total_pages: int
-    data: List[Session]
+    data: List[User]
